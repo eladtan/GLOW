@@ -3,7 +3,7 @@
   "parts": [
     {
       "file": "opacity_tables_part00.npz",
-      "file_size_bytes": 125960,
+      "file_size_bytes": 103318,
       "arrays": {
         "rho_gcc": {
           "shape": [
@@ -15,53 +15,53 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256
+          "size": 26,
+          "nbytes": 208
         },
         "kross_scattering": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "kplanck": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland_absorption": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         }
       }
     },
     {
       "file": "opacity_tables_part01.npz",
-      "file_size_bytes": 121755,
+      "file_size_bytes": 100332,
       "arrays": {
         "rho_gcc": {
           "shape": [
@@ -73,53 +73,53 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256
+          "size": 26,
+          "nbytes": 208
         },
         "kross_scattering": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "kplanck": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland_absorption": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         }
       }
     },
     {
       "file": "opacity_tables_part02.npz",
-      "file_size_bytes": 111460,
+      "file_size_bytes": 95947,
       "arrays": {
         "rho_gcc": {
           "shape": [
@@ -131,53 +131,53 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256
+          "size": 26,
+          "nbytes": 208
         },
         "kross_scattering": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "kplanck": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         },
         "krosseland_absorption": {
           "shape": [
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3328,
+          "nbytes": 26624
         }
       }
     },
     {
       "file": "opacity_tables_part03.npz",
-      "file_size_bytes": 100967,
+      "file_size_bytes": 83814,
       "arrays": {
         "rho_gcc": {
           "shape": [
@@ -189,47 +189,105 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256
+          "size": 25,
+          "nbytes": 200
         },
         "kross_scattering": {
           "shape": [
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3200,
+          "nbytes": 25600
         },
         "kplanck": {
           "shape": [
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3200,
+          "nbytes": 25600
         },
         "krosseland": {
           "shape": [
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3200,
+          "nbytes": 25600
         },
         "krosseland_absorption": {
           "shape": [
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4096,
-          "nbytes": 32768
+          "size": 3200,
+          "nbytes": 25600
+        }
+      }
+    },
+    {
+      "file": "opacity_tables_part04.npz",
+      "file_size_bytes": 78883,
+      "arrays": {
+        "rho_gcc": {
+          "shape": [
+            128
+          ],
+          "dtype": "float64",
+          "size": 128,
+          "nbytes": 1024
+        },
+        "temp_eV": {
+          "shape": [
+            25
+          ],
+          "dtype": "float64",
+          "size": 25,
+          "nbytes": 200
+        },
+        "kross_scattering": {
+          "shape": [
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3200,
+          "nbytes": 25600
+        },
+        "kplanck": {
+          "shape": [
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3200,
+          "nbytes": 25600
+        },
+        "krosseland": {
+          "shape": [
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3200,
+          "nbytes": 25600
+        },
+        "krosseland_absorption": {
+          "shape": [
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3200,
+          "nbytes": 25600
         }
       }
     }

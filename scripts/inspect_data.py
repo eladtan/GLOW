@@ -113,8 +113,13 @@ def main() -> None:
     print(f"Machine-readable report: {report_path}")
     print()
     print("Next, review whether:")
-    print("  1. All four files contain the same array names.")
-    print("  2. Table arrays have shape (128, 32).")
+    n_parts = len(parts)
+    n_temps = parts[0].get("n_temp", parts[0].get("shape_tables", [128, None])[1])
+    print(f"  1. All {n_parts} files contain the same array names.")
+    if n_temps is not None:
+        print(f"  2. Table arrays have shape (128, {n_temps}).")
+    else:
+        print("  2. Table arrays share the same rho/temperature shape.")
     print("  3. Density and temperature coordinate arrays are present.")
     print("  4. The data are float32 or float64.")
     print("  5. There are no unexpected NaN or infinite values.")

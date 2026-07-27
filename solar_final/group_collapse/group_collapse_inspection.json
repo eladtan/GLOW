@@ -8,7 +8,7 @@
   "parts": [
     {
       "file": "opacity_group_collapse_part00.npz",
-      "file_size_bytes": 47486729,
+      "file_size_bytes": 86729500,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -57,92 +57,92 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256,
-          "finite_count": 32,
+          "size": 26,
+          "nbytes": 208,
+          "finite_count": 26,
           "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.5,
-          "maximum": 9.838348628251039,
-          "mean": 3.2001959644242364
+          "maximum": 5.526877591581138,
+          "mean": 2.1291012111972476
         },
         "kross_scattering": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 1565121,
-          "nan_count": 2629183,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 3.3018573093107816e-06,
-          "maximum": 9.93910229356282e+299,
-          "mean": 1.9050696772657276e+296
+          "minimum": 1.2384961336710786e-08,
+          "maximum": 2.571616285143343e+298,
+          "mean": 6.980528718621022e+296
         },
         "kplanck": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 1485952,
-          "nan_count": 2708352,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 7.454344873474539e-10,
-          "maximum": 62540546.02843235,
-          "mean": 172141.67576697053
+          "minimum": 0.0,
+          "maximum": 1918633740.835121,
+          "mean": 3138422.2939933087
         },
         "krosseland": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 1563380,
-          "nan_count": 2630924,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 0.3801645934777485,
-          "maximum": 9.996550635421629e+299,
-          "mean": 2.0673401609689566e+296
+          "minimum": 0.000902457118769876,
+          "maximum": 9.999279483003527e+299,
+          "mean": 1.5392533375159125e+298
         },
         "krosseland_absorption": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 1572608,
-          "nan_count": 2621696,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 7.454143235682244e-10,
-          "maximum": 38962712.41051897,
-          "mean": 148564.07116772974
+          "maximum": 35910273.63051575,
+          "mean": 55871.747153610886
         }
       }
     },
     {
       "file": "opacity_group_collapse_part01.npz",
-      "file_size_bytes": 66324244,
+      "file_size_bytes": 89593450,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -191,92 +191,92 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256,
-          "finite_count": 32,
+          "size": 26,
+          "nbytes": 208,
+          "finite_count": 26,
           "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 10.830851508301738,
-          "maximum": 213.11538615898232,
-          "mean": 69.32169457629075
+          "minimum": 6.084434772628814,
+          "maximum": 67.25585240455854,
+          "mean": 25.90875488770932
         },
         "kross_scattering": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2239610,
-          "nan_count": 1954694,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 8.054080907866938,
-          "maximum": 9.932047541622411e+299,
-          "mean": 1.6883726858892667e+296
+          "minimum": 0.006481759334865345,
+          "maximum": 7.535984185736961e+298,
+          "mean": 9.217733247646599e+296
         },
         "kplanck": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2161024,
-          "nan_count": 2033280,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 1.9680369348151419e-19,
-          "maximum": 36855341.04092728,
-          "mean": 87967.92021513505
+          "minimum": 0.0,
+          "maximum": 1189349174.4097903,
+          "mean": 3133231.3011192605
         },
         "krosseland": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2239483,
-          "nan_count": 1954821,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 22.29711352858099,
-          "maximum": 9.563534906244234e+299,
-          "mean": 1.3638721911995107e+296
+          "minimum": 0.32358576118982085,
+          "maximum": 4.631836943454238e+299,
+          "mean": 1.4066506181174183e+297
         },
         "krosseland_absorption": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2247680,
-          "nan_count": 1946624,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 1.9678438565198883e-19,
-          "maximum": 36854524.2283998,
-          "mean": 84565.67573844282
+          "minimum": 0.0,
+          "maximum": 38962712.41051897,
+          "mean": 51155.25802645438
         }
       }
     },
     {
       "file": "opacity_group_collapse_part02.npz",
-      "file_size_bytes": 79876650,
+      "file_size_bytes": 90901818,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -325,92 +325,92 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256,
-          "finite_count": 32,
+          "size": 26,
+          "nbytes": 208,
+          "finite_count": 26,
           "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 234.6146887897641,
-          "maximum": 4616.442203244641,
-          "mean": 1501.6259605193027
+          "minimum": 74.0406930047493,
+          "maximum": 818.427694066175,
+          "mean": 315.28025830859076
         },
         "kross_scattering": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2734720,
-          "nan_count": 1459584,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 14.771208540668688,
-          "maximum": 1.5601955897783126e+296,
-          "mean": 8.429733219648422e+291
+          "minimum": 0.18561968316777044,
+          "maximum": 3.8242343522283704e+298,
+          "mean": 1.2112709340379243e+296
         },
         "kplanck": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2834560,
-          "nan_count": 1359744,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 10575921.74754361,
-          "mean": 24660.952846025735
+          "maximum": 387923404.7677524,
+          "mean": 1019095.3172725609
         },
         "krosseland": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2907240,
-          "nan_count": 1287064,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 19.790350874916523,
-          "maximum": 9.999826901721139e+299,
-          "mean": 5.923351765252042e+295
+          "minimum": 0.21053105726959312,
+          "maximum": 3.838913541490985e+298,
+          "mean": 1.1710734833060409e+296
         },
         "krosseland_absorption": {
           "shape": [
             1024,
             128,
-            32
+            26
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 2909824,
-          "nan_count": 1284480,
+          "size": 3407872,
+          "nbytes": 27262976,
+          "finite_count": 3407872,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 10575910.153088298,
-          "mean": 24022.00764503949
+          "maximum": 18019329.729623206,
+          "mean": 29752.689628046704
         }
       }
     },
     {
       "file": "opacity_group_collapse_part03.npz",
-      "file_size_bytes": 82125979,
+      "file_size_bytes": 87169034,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -459,86 +459,220 @@
         },
         "temp_eV": {
           "shape": [
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 32,
-          "nbytes": 256,
-          "finite_count": 32,
+          "size": 25,
+          "nbytes": 200,
+          "finite_count": 25,
           "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 5082.153711896717,
-          "maximum": 100000.0,
-          "mean": 32527.77559879107
+          "minimum": 900.991534215264,
+          "maximum": 9046.69936532753,
+          "mean": 3591.6949132417726
         },
         "kross_scattering": {
           "shape": [
             1024,
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 3129344,
-          "nan_count": 1064960,
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 5.0215838989005865,
-          "maximum": 1.1738831482980445e+158,
-          "mean": 4.776984139994398e+153
+          "minimum": 0.1889597297016016,
+          "maximum": 1.8209972728115358e+298,
+          "mean": 1.7260427130648186e+295
         },
         "kplanck": {
           "shape": [
             1024,
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 3129344,
-          "nan_count": 1064960,
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 2248188.8067112346,
-          "mean": 4923.161826469271
+          "maximum": 106970778.92841953,
+          "mean": 318540.110112769
         },
         "krosseland": {
           "shape": [
             1024,
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 3129344,
-          "nan_count": 1064960,
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 5.021617916889876,
-          "maximum": 1.1738831482980445e+158,
-          "mean": 4.77698414702766e+153
+          "minimum": 0.19218274050427916,
+          "maximum": 1.8209972728115358e+298,
+          "mean": 1.7260438694089761e+295
         },
         "krosseland_absorption": {
           "shape": [
             1024,
             128,
-            32
+            25
           ],
           "dtype": "float64",
-          "size": 4194304,
-          "nbytes": 33554432,
-          "finite_count": 3129344,
-          "nan_count": 1064960,
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 2247542.1547122793,
-          "mean": 4922.9506338439805
+          "maximum": 5624138.154240481,
+          "mean": 10169.651450499652
+        }
+      }
+    },
+    {
+      "file": "opacity_group_collapse_part04.npz",
+      "file_size_bytes": 86365088,
+      "arrays": {
+        "hnu_ev_edges": {
+          "shape": [
+            1025
+          ],
+          "dtype": "float64",
+          "size": 1025,
+          "nbytes": 8200,
+          "finite_count": 1025,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.01,
+          "maximum": 2000000.0000000002,
+          "mean": 105512.84795191664
+        },
+        "hnu_ev_centers": {
+          "shape": [
+            1024
+          ],
+          "dtype": "float64",
+          "size": 1024,
+          "nbytes": 8192,
+          "finite_count": 1024,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.010093766113295651,
+          "maximum": 1981420.9855383632,
+          "mean": 104634.76827901762
+        },
+        "rho_gcc": {
+          "shape": [
+            128
+          ],
+          "dtype": "float64",
+          "size": 128,
+          "nbytes": 1024,
+          "finite_count": 128,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 1e-17,
+          "maximum": 1000.0,
+          "mean": 25.68688748606339
+        },
+        "temp_eV": {
+          "shape": [
+            25
+          ],
+          "dtype": "float64",
+          "size": 25,
+          "nbytes": 200,
+          "finite_count": 25,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 9959.33984131731,
+          "maximum": 100000.0,
+          "mean": 39701.716263583825
+        },
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.1928494947101714,
+          "maximum": 9.120324628986256e+76,
+          "mean": 3.6261495699519896e+72
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.0,
+          "maximum": 33635354.94830049,
+          "mean": 99868.58173966581
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.19368127415087458,
+          "maximum": 9.120324628986256e+76,
+          "mean": 3.6261495765678484e+72
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "dtype": "float64",
+          "size": 3276800,
+          "nbytes": 26214400,
+          "finite_count": 3276800,
+          "nan_count": 0,
+          "positive_infinity_count": 0,
+          "negative_infinity_count": 0,
+          "minimum": 0.0,
+          "maximum": 1755456.87912764,
+          "mean": 2920.100449923892
         }
       }
     }

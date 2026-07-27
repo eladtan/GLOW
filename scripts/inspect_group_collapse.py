@@ -14,12 +14,12 @@ MANIFEST_PATH = DATA_DIR / "manifest.json"
 OUTPUT_PATH = GROUP_DIR / "group_collapse_inspection.json"
 
 
-EXPECTED_PARTS = [
-    "opacity_group_collapse_part00.npz",
-    "opacity_group_collapse_part01.npz",
-    "opacity_group_collapse_part02.npz",
-    "opacity_group_collapse_part03.npz",
-]
+def expected_parts(manifest: dict) -> list[str]:
+    n_parts = int(manifest["n_temp_parts"])
+    return [
+        f"opacity_group_collapse_part{index:02d}.npz"
+        for index in range(n_parts)
+    ]
 
 
 def describe_array(array: np.ndarray) -> dict:
@@ -192,7 +192,7 @@ def main() -> None:
         "validation_errors": [],
     }
 
-    for filename in EXPECTED_PARTS:
+    for filename in expected_parts(manifest):
         path = GROUP_DIR / filename
 
         if not path.is_file():
@@ -231,8 +231,9 @@ def main() -> None:
     print("  - energy-group coordinate or group boundaries")
     print("  - group-resolved opacity arrays")
     print()
+    n_temps = report["parts"][0]["arrays"]["temp_eV"]["shape"][0]
     print("Expected multigroup table shape:")
-    print("  (1024, 128, 32)")
+    print(f"  (1024, 128, {n_temps})")
     print("or an equivalent axis ordering.")
 
 
