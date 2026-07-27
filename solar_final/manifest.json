@@ -1,4 +1,41 @@
 {
+  "axis_metadata": {
+    "group": {
+      "coordinate": "hnu_ev_centers",
+      "edges": "hnu_ev_edges",
+      "units": "eV"
+    },
+    "rho": {
+      "coordinate": "rho_gcc",
+      "units": "g cm^-3"
+    },
+    "temp": {
+      "coordinate": "temp_eV",
+      "units": "eV"
+    }
+  },
+  "field_metadata": {
+    "kross_scattering": {
+      "label": "Rosseland-mean scattering opacity",
+      "description": "Group-dependent scattering contribution to the Rosseland opacity.",
+      "units": "cm^2 g^-1"
+    },
+    "kplanck": {
+      "label": "Planck-mean absorption opacity",
+      "description": "Group-dependent Planck-weighted absorption opacity.",
+      "units": "cm^2 g^-1"
+    },
+    "krosseland": {
+      "label": "Rosseland-mean total opacity",
+      "description": "Group-dependent Rosseland total opacity including absorption and scattering.",
+      "units": "cm^2 g^-1"
+    },
+    "krosseland_absorption": {
+      "label": "Rosseland-mean absorption opacity",
+      "description": "Group-dependent absorption contribution to the Rosseland opacity.",
+      "units": "cm^2 g^-1"
+    }
+  },
   "axis_order": "group,rho,temp",
   "fields": [
     "kross_scattering",
