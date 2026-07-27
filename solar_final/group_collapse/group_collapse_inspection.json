@@ -8,7 +8,7 @@
   "parts": [
     {
       "file": "opacity_group_collapse_part00.npz",
-      "file_size_bytes": 76638656,
+      "file_size_bytes": 81681071,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -134,15 +134,15 @@
           "nan_count": 0,
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
-          "minimum": 2.189057830817739e-09,
-          "maximum": 1.0,
-          "mean": 0.7789250897949908
+          "minimum": 7.454143235682244e-10,
+          "maximum": 1918633740.835121,
+          "mean": 3131934.3892682535
         }
       }
     },
     {
       "file": "opacity_group_collapse_part01.npz",
-      "file_size_bytes": 84646722,
+      "file_size_bytes": 89916842,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -269,14 +269,14 @@
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 1.0,
-          "mean": 0.6510939031215397
+          "maximum": 1189349174.4097903,
+          "mean": 3133212.595131074
         }
       }
     },
     {
       "file": "opacity_group_collapse_part02.npz",
-      "file_size_bytes": 86327306,
+      "file_size_bytes": 91213180,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -403,14 +403,14 @@
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 1.0,
-          "mean": 0.47829377414504826
+          "maximum": 387923404.7677524,
+          "mean": 1019093.7647321416
         }
       }
     },
     {
       "file": "opacity_group_collapse_part03.npz",
-      "file_size_bytes": 84477475,
+      "file_size_bytes": 86845772,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -537,14 +537,14 @@
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 1.0,
-          "mean": 0.3134523144578027
+          "maximum": 106970778.92841953,
+          "mean": 318539.6770558488
         }
       }
     },
     {
       "file": "opacity_group_collapse_part04.npz",
-      "file_size_bytes": 85582643,
+      "file_size_bytes": 86461434,
       "arrays": {
         "hnu_ev_edges": {
           "shape": [
@@ -671,8 +671,8 @@
           "positive_infinity_count": 0,
           "negative_infinity_count": 0,
           "minimum": 0.0,
-          "maximum": 0.9999999942664644,
-          "mean": 0.20789780895382168
+          "maximum": 33635354.94830049,
+          "mean": 99868.45434335856
         }
       }
     }
