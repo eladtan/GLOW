@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="description"
+    content="Explore and download GLOW multigroup opacity tables."
+  >
+  <title>GLOW Opacity Tables</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-content">
+      <div>
+        <p class="eyebrow">Public astrophysical opacity tables</p>
+        <h1>GLOW</h1>
+        <p class="subtitle">
+          Explore and download multigroup opacities for
+          low-density astrophysical plasmas.
+        </p>
+      </div>
+
+      <div class="dataset-badge">
+        <span>Prototype dataset</span>
+        <strong>Solar composition</strong>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card introduction">
+      <h2>Planck-mean absorption opacity</h2>
+      <p>
+        This prototype provides the first temperature block of the
+        GLOW solar-composition dataset. Select a temperature, density
+        range, and photon-energy group range. Only the required data
+        chunks will be downloaded.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Table selection</h2>
+
+      <div id="loading-message" class="status">
+        Loading dataset metadata…
+      </div>
+
+      <form id="selection-form" hidden>
+        <div class="form-grid">
+          <label>
+            Opacity
+            <select id="field-select" disabled>
+              <option>Planck-mean absorption opacity</option>
+            </select>
+          </label>
+
+          <label>
+            Temperature
+            <select id="temperature-select"></select>
+          </label>
+
+          <label>
+            Minimum density
+            <select id="density-min-select"></select>
+          </label>
+
+          <label>
+            Maximum density
+            <select id="density-max-select"></select>
+          </label>
+
+          <label>
+            First energy group
+            <input
+              id="group-min-input"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+              required
+            >
+          </label>
+
+          <label>
+            Last energy group
+            <input
+              id="group-max-input"
+              type="number"
+              min="0"
+              step="1"
+              value="127"
+              required
+            >
+          </label>
+        </div>
+
+        <div class="summary-panel">
+          <dl>
+            <div>
+              <dt>Temperature</dt>
+              <dd id="temperature-summary">—</dd>
+            </div>
+
+            <div>
+              <dt>Density points</dt>
+              <dd id="density-summary">—</dd>
+            </div>
+
+            <div>
+              <dt>Energy groups</dt>
+              <dd id="group-summary">—</dd>
+            </div>
+
+            <div>
+              <dt>Estimated transfer</dt>
+              <dd id="transfer-summary">—</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div id="form-error" class="error" hidden></div>
+
+        <div class="button-row">
+          <button id="preview-button" type="button">
+            Load preview
+          </button>
+
+          <button
+            id="download-button"
+            type="button"
+            class="secondary"
+          >
+            Download TXT
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="preview-section" class="card" hidden>
+      <div class="section-heading">
+        <div>
+          <h2>Preview</h2>
+          <p id="preview-description"></p>
+        </div>
+
+        <span id="preview-limit" class="small-badge"></span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Group</th>
+              <th>Energy lower edge [eV]</th>
+              <th>Energy upper edge [eV]</th>
+              <th>Density [g cm⁻³]</th>
+              <th>Temperature [eV]</th>
+              <th>Opacity [cm² g⁻¹]</th>
+            </tr>
+          </thead>
+
+          <tbody id="preview-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card notes">
+      <h2>Data layout</h2>
+      <p>
+        Stored arrays use the axis order
+        <code>group, density, temperature</code>.
+        Browser chunks are gzip-compressed little-endian
+        <code>float64</code> arrays.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      GLOW — A Public Library of Multigroup Opacities Extending to
+      Low-Density Astrophysical Plasmas
+    </p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
