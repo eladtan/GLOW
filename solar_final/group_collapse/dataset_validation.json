@@ -1,0 +1,307 @@
+{
+  "parts": [
+    {
+      "file": "opacity_group_collapse_part00.npz",
+      "n_temperatures": 26,
+      "temperature_min_eV": 0.5,
+      "temperature_max_eV": 5.526877591581138,
+      "fields": {
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 3.4278034687754884e-10,
+          "maximum": 0.3405771327096057,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0,
+          "maximum": 1918633740.835121,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 1386624
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 9.47947629347838e-09,
+          "maximum": 1918633740.9604664,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 7.454143235682244e-10,
+          "maximum": 1918633740.835121,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        }
+      }
+    },
+    {
+      "file": "opacity_group_collapse_part01.npz",
+      "n_temperatures": 26,
+      "temperature_min_eV": 6.084434772628814,
+      "temperature_max_eV": 67.25585240455854,
+      "fields": {
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 4.5716669074427136e-05,
+          "maximum": 1.1123268901709054,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0,
+          "maximum": 1189349174.4097903,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 941493
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 2.8050361936804027e-09,
+          "maximum": 1189349174.58433,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0,
+          "maximum": 1189349174.4097903,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 437
+        }
+      }
+    },
+    {
+      "file": "opacity_group_collapse_part02.npz",
+      "n_temperatures": 26,
+      "temperature_min_eV": 74.0406930047493,
+      "temperature_max_eV": 818.427694066175,
+      "fields": {
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0025996152726504825,
+          "maximum": 0.7020798342505767,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0,
+          "maximum": 387923404.7677524,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 512022
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 1.9701123629056336e-28,
+          "maximum": 387923404.95481354,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            26
+          ],
+          "minimum": 0.0,
+          "maximum": 387923404.7677524,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 16534
+        }
+      }
+    },
+    {
+      "file": "opacity_group_collapse_part03.npz",
+      "n_temperatures": 25,
+      "temperature_min_eV": 900.991534215264,
+      "temperature_max_eV": 9046.69936532753,
+      "fields": {
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.0003813274867119404,
+          "maximum": 0.35413688133374865,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.0,
+          "maximum": 106970778.92841953,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 102095
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 1.4834885959341715e-28,
+          "maximum": 106970779.1174819,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.0,
+          "maximum": 106970778.92841953,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 18767
+        }
+      }
+    },
+    {
+      "file": "opacity_group_collapse_part04.npz",
+      "n_temperatures": 25,
+      "temperature_min_eV": 9959.33984131731,
+      "temperature_max_eV": 100000.0,
+      "fields": {
+        "kross_scattering": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.03548471426960059,
+          "maximum": 0.5497412896990783,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "kplanck": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.0,
+          "maximum": 33635354.94830049,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 543
+        },
+        "krosseland": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.035484721739528734,
+          "maximum": 33635355.14115,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 0
+        },
+        "krosseland_absorption": {
+          "shape": [
+            1024,
+            128,
+            25
+          ],
+          "minimum": 0.0,
+          "maximum": 33635354.94830049,
+          "nan_count": 0,
+          "infinity_count": 0,
+          "negative_count": 0,
+          "zero_count": 543
+        }
+      }
+    }
+  ],
+  "total_temperatures": 128,
+  "errors": [],
+  "warnings": []
+}
