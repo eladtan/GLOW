@@ -1,4 +1,16 @@
-'use strict';
+#!/usr/bin/env python3
+
+from pathlib import Path
+import shutil
+import sys
+
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+INDEX_PATH = REPO_ROOT / "index.html"
+APP_PATH = REPO_ROOT / "app.js"
+
+
+APP_JS = r"""'use strict';
 
 const DATA_ROOT = 'solar_final/web_data';
 const MANIFEST_URL = `${DATA_ROOT}/manifest.json`;
@@ -857,3 +869,123 @@ elements.downloadButton.addEventListener(
 );
 
 initialize();
+"""
+
+
+def patch_index(content: str) -> str:
+    replacements = [
+        (
+            "<span>Prototype dataset</span>",
+            "<span>Full dataset</span>",
+        ),
+        (
+            """This prototype provides the first temperature block of the
+        GLOW solar-composition dataset. Select a temperature, density
+        range, and photon-energy group range. Only the required data
+        chunks will be downloaded.""",
+            """Explore the full GLOW solar-composition multigroup-opacity
+        dataset. Select an opacity definition, temperature, density
+        range, and photon-energy group range. Only the required data
+        chunks will be downloaded.""",
+        ),
+        (
+            """<select id="field-select" disabled>
+              <option>Planck-mean absorption opacity</option>
+            </select>""",
+            """<select id="field-select"></select>""",
+        ),
+        (
+            "<h2>Planck-mean absorption opacity</h2>",
+            "<h2>Solar-composition multigroup opacities</h2>",
+        ),
+    ]
+
+    for old, new in replacements:
+        if old not in content:
+            raise ValueError(
+                "Could not find expected index.html text:\n"
+                f"{old}"
+            )
+
+        content = content.replace(old, new, 1)
+
+    return content
+
+
+def backup(path: Path) -> Path:
+    backup_path = path.with_suffix(
+        path.suffix + ".prototype"
+    )
+
+    if backup_path.exists():
+        raise FileExistsError(
+            f"Backup already exists: {backup_path}"
+        )
+
+    shutil.copy2(path, backup_path)
+    return backup_path
+
+
+def main() -> None:
+    required = [
+        INDEX_PATH,
+        APP_PATH,
+        REPO_ROOT
+        / "solar_final"
+        / "web_data"
+        / "manifest.json",
+        REPO_ROOT
+        / "solar_final"
+        / "web_data"
+        / "axes.json",
+    ]
+
+    missing = [
+        path for path in required
+        if not path.is_file()
+    ]
+
+    if missing:
+        raise FileNotFoundError(
+            "Missing required files:\n"
+            + "\n".join(str(path) for path in missing)
+        )
+
+    index_backup = backup(INDEX_PATH)
+    app_backup = backup(APP_PATH)
+
+    print(
+        f"Backed up {INDEX_PATH.name} to "
+        f"{index_backup.name}"
+    )
+    print(
+        f"Backed up {APP_PATH.name} to "
+        f"{app_backup.name}"
+    )
+
+    current_index = INDEX_PATH.read_text(
+        encoding="utf-8"
+    )
+
+    INDEX_PATH.write_text(
+        patch_index(current_index),
+        encoding="utf-8",
+    )
+
+    APP_PATH.write_text(
+        APP_JS,
+        encoding="utf-8",
+    )
+
+    print("Updated index.html")
+    print("Updated app.js")
+    print()
+    print("The website now uses solar_final/web_data.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        sys.exit(1)
