@@ -774,8 +774,17 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
 .footer-links a { color: var(--muted); font-size: .75rem; text-decoration: none; }
 .footer-links a:hover { color: var(--text); }
 
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity 550ms ease, transform 550ms ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+/* Content is visible by default. Animations are enabled only when theme.js loads successfully. */
+.reveal { opacity: 1; transform: none; }
+.reveal-animations .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 550ms ease, transform 550ms ease;
+}
+.reveal-animations .reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
