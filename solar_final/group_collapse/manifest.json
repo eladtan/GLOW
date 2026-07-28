@@ -1,0 +1,18 @@
+{
+  "axis_order": "group,rho,temp",
+  "fields": [
+    "kross_scattering",
+    "kplanck",
+    "krosseland",
+    "krosseland_absorption"
+  ],
+  "hnu_max_eV": 2000000.0000000002,
+  "hnu_min_eV": 0.01,
+  "n_groups": 1024,
+  "shape": [
+    1024,
+    128,
+    128
+  ],
+  "spacing": "log"
+}

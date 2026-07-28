@@ -12,12 +12,12 @@
             128,
             26
           ],
-          "minimum": 3.4278034687754884e-10,
+          "minimum": 0.0,
           "maximum": 0.3405771327096057,
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 0
+          "zero_count": 288234
         },
         "kplanck": {
           "shape": [
@@ -25,12 +25,12 @@
             128,
             26
           ],
-          "minimum": 0.0,
+          "minimum": 7.454344873474539e-10,
           "maximum": 1918633740.835121,
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 1386624
+          "zero_count": 0
         },
         "krosseland": {
           "shape": [
@@ -38,7 +38,7 @@
             128,
             26
           ],
-          "minimum": 9.47947629347838e-09,
+          "minimum": 9.78735291518648e-09,
           "maximum": 1918633740.9604664,
           "nan_count": 0,
           "infinity_count": 0,
@@ -72,12 +72,12 @@
             128,
             26
           ],
-          "minimum": 4.5716669074427136e-05,
+          "minimum": 0.0,
           "maximum": 1.1123268901709054,
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 0
+          "zero_count": 445952
         },
         "kplanck": {
           "shape": [
@@ -90,7 +90,7 @@
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 941493
+          "zero_count": 437
         },
         "krosseland": {
           "shape": [
@@ -98,7 +98,7 @@
             128,
             26
           ],
-          "minimum": 2.8050361936804027e-09,
+          "minimum": 2.896858265998732e-09,
           "maximum": 1189349174.58433,
           "nan_count": 0,
           "infinity_count": 0,
@@ -132,12 +132,12 @@
             128,
             26
           ],
-          "minimum": 0.0025996152726504825,
+          "minimum": 0.0,
           "maximum": 0.7020798342505767,
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 0
+          "zero_count": 445952
         },
         "kplanck": {
           "shape": [
@@ -150,7 +150,7 @@
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 512022
+          "zero_count": 16534
         },
         "krosseland": {
           "shape": [
@@ -158,7 +158,7 @@
             128,
             26
           ],
-          "minimum": 1.9701123629056336e-28,
+          "minimum": 1.965523676904797e-28,
           "maximum": 387923404.95481354,
           "nan_count": 0,
           "infinity_count": 0,
@@ -192,12 +192,12 @@
             128,
             25
           ],
-          "minimum": 0.0003813274867119404,
+          "minimum": 0.0,
           "maximum": 0.35413688133374865,
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 0
+          "zero_count": 153984
         },
         "kplanck": {
           "shape": [
@@ -210,7 +210,7 @@
           "nan_count": 0,
           "infinity_count": 0,
           "negative_count": 0,
-          "zero_count": 102095
+          "zero_count": 18767
         },
         "krosseland": {
           "shape": [
@@ -218,7 +218,7 @@
             128,
             25
           ],
-          "minimum": 1.4834885959341715e-28,
+          "minimum": 1.4803634890780976e-28,
           "maximum": 106970779.1174819,
           "nan_count": 0,
           "infinity_count": 0,
@@ -252,7 +252,7 @@
             128,
             25
           ],
-          "minimum": 0.03548471426960059,
+          "minimum": 0.03549402196400233,
           "maximum": 0.5497412896990783,
           "nan_count": 0,
           "infinity_count": 0,
@@ -278,7 +278,7 @@
             128,
             25
           ],
-          "minimum": 0.035484721739528734,
+          "minimum": 0.03549402944509428,
           "maximum": 33635355.14115,
           "nan_count": 0,
           "infinity_count": 0,
