@@ -1,0 +1,23 @@
+
+# Local backups
+*.before_*
+*.before_v*
+*.before_planck*
+
+# Validation output
+*_zero_provenance*.csv
+*_zero_audit*.txt
+*conservation_report*.txt
+generate_*_1024.log
+generate_*_one_group.log
+
+# Installation archives
+glow_*_v*.zip
+
+# Generated directory backups
+solar_final/web_data.before_*/
+solar_final/group_collapse_before_*/
+
+# Python
+__pycache__/
+*.pyc
