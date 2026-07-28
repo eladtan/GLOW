@@ -864,3 +864,38 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
   .data-section { padding: 4rem 0; }
   .data-actions .button { width: 100%; }
 }
+
+/* Formal GLOW project identity. */
+.hero-identity {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 48rem;
+  margin: 1.35rem 0 1rem;
+  padding: 0.9rem 1rem;
+  border-left: 3px solid var(--accent, #ff4f78);
+  background: linear-gradient(
+    90deg,
+    rgba(117, 87, 255, 0.12),
+    rgba(255, 79, 120, 0.05),
+    transparent
+  );
+}
+
+.hero-identity strong {
+  color: var(--text, #f4f6ff);
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+  line-height: 1.35;
+}
+
+.hero-identity span {
+  color: var(--muted, #a8b0c2);
+  font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+  line-height: 1.5;
+}
+
+@media (max-width: 680px) {
+  .hero-identity {
+    margin-top: 1rem;
+    padding: 0.8rem 0.85rem;
+  }
+}
