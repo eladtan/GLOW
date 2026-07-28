@@ -9,10 +9,12 @@ import {
   parseStrictlyIncreasingEdges,
   requiredFieldsForCollapse,
 } from './opacity_math.mjs';
+import { isDrawablePoint, preparePlotDomain } from './plot_math.mjs';
 
 const DATA_ROOT = 'solar_final/web_data';
 const MANIFEST_URL = `${DATA_ROOT}/manifest.json`;
 const AXES_URL = `${DATA_ROOT}/axes.json`;
+const PLOT_MANIFEST_URL = `${DATA_ROOT}/plot/manifest.json`;
 
 const PREVIEW_ROW_LIMIT = 300;
 const MAX_OUTPUT_ROWS = 2_000_000;
@@ -26,6 +28,9 @@ const state = {
   axes: null,
   chunkCache: new Map(),
   collapsePlanCache: new Map(),
+  plotManifest: null,
+  plotCache: new Map(),
+  lastPlot: null,
 };
 
 const elements = {
@@ -63,6 +68,38 @@ const elements = {
   previewDescription: document.querySelector('#preview-description'),
   previewLimit: document.querySelector('#preview-limit'),
   previewBody: document.querySelector('#preview-body'),
+  plotForm: document.querySelector('#plot-form'),
+  plotFieldSelect: document.querySelector('#plot-field-select'),
+  plotSweepSelect: document.querySelector('#plot-sweep-select'),
+  plotLogX: document.querySelector('#plot-log-x'),
+  plotLogY: document.querySelector('#plot-log-y'),
+  plotDensityMode: document.querySelector('#plot-density-mode'),
+  plotDensitySelect: document.querySelector('#plot-density-select'),
+  plotDensityCustom: document.querySelector('#plot-density-custom'),
+  plotTemperatureMode: document.querySelector('#plot-temperature-mode'),
+  plotTemperatureSelect: document.querySelector('#plot-temperature-select'),
+  plotTemperatureCustom: document.querySelector('#plot-temperature-custom'),
+  plotFixedDensityPanel: document.querySelector('#plot-fixed-density-panel'),
+  plotFixedTemperaturePanel: document.querySelector('#plot-fixed-temperature-panel'),
+  plotDensityNativeLabel: document.querySelector('#plot-density-native-label'),
+  plotDensityCustomLabel: document.querySelector('#plot-density-custom-label'),
+  plotTemperatureNativeLabel: document.querySelector('#plot-temperature-native-label'),
+  plotTemperatureCustomLabel: document.querySelector('#plot-temperature-custom-label'),
+  plotGroupPanel: document.querySelector('#plot-group-panel'),
+  plotIntegratedHelp: document.querySelector('#plot-integrated-help'),
+  plotGroupInput: document.querySelector('#plot-group-input'),
+  plotGroupRange: document.querySelector('#plot-group-range'),
+  plotPointSummary: document.querySelector('#plot-point-summary'),
+  plotTransferSummary: document.querySelector('#plot-transfer-summary'),
+  plotEnergySummary: document.querySelector('#plot-energy-summary'),
+  plotFormError: document.querySelector('#plot-form-error'),
+  plotButton: document.querySelector('#plot-button'),
+  plotDownloadButton: document.querySelector('#plot-download-button'),
+  plotSection: document.querySelector('#plot-section'),
+  plotDescription: document.querySelector('#plot-description'),
+  plotWarningBadge: document.querySelector('#plot-warning-badge'),
+  plotChart: document.querySelector('#plot-chart'),
+  plotZeroNote: document.querySelector('#plot-zero-note'),
 };
 
 function selectedMode(name) {
@@ -94,6 +131,8 @@ function clearError() {
 function setBusy(isBusy, message = '') {
   elements.previewButton.disabled = isBusy;
   elements.downloadButton.disabled = isBusy;
+  elements.plotButton.disabled = isBusy;
+  elements.plotDownloadButton.disabled = isBusy || !state.lastPlot;
   if (message) {
     elements.loadingMessage.textContent = message;
     elements.loadingMessage.hidden = false;
@@ -136,6 +175,35 @@ async function loadChunk(chunkInfo) {
     return await promise;
   } catch (error) {
     state.chunkCache.delete(chunkInfo.file);
+    throw error;
+  }
+}
+
+
+async function loadPlotField(field) {
+  if (!state.plotManifest || !(field in state.plotManifest.fields)) {
+    throw new Error(`No integrated plot data are available for ${field}.`);
+  }
+  const info = state.plotManifest.fields[field];
+  if (state.plotCache.has(info.file)) return state.plotCache.get(info.file);
+
+  const promise = (async () => {
+    const url = `${DATA_ROOT}/plot/${info.file}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
+    const buffer = await decompressGzip(response);
+    const expectedValues = info.shape.reduce((product, size) => product * size, 1);
+    if (buffer.byteLength !== expectedValues * 8) {
+      throw new Error(`${info.file} has ${buffer.byteLength} bytes; expected ${expectedValues * 8}.`);
+    }
+    return new Float64Array(buffer);
+  })();
+
+  state.plotCache.set(info.file, promise);
+  try {
+    return await promise;
+  } catch (error) {
+    state.plotCache.delete(info.file);
     throw error;
   }
 }
@@ -572,16 +640,15 @@ function createTextHeader(query, warningCount) {
     '# temperature_interpolation: linear in log(T), log(kappa)',
     '# density_interpolation: linear in log(rho), log(kappa)',
     `# energy_operation: ${energyOperation}`,
+    '# weight_evaluation: logarithmic quadrature with common-factor cancellation',
     '# planck_fields: kplanck',
     '# rosseland_total_field: krosseland',
-    '# rosseland_harmonic_fields: krosseland, kross_scattering',
-    '# rosseland_flux_weighted_absorption_field: krosseland_absorption',
-    '# rosseland_absorption_recollapse: sum(W_i * kappa_abs_i / kappa_total_i) / sum(W_i / kappa_total_i)',
-    '# recollapse_approximation: published 1024-group means are treated as piecewise constant within each native group',
-    '# opacity_inside_native_group: piecewise constant',
-    '# partial_native_group_overlap: weight integrated only over overlap',
+    '# rosseland_harmonic_fields: krosseland',
+    '# rosseland_absorption_collapse: sum(kappa_abs_i * W_i / kappa_total_i) / sum(W_i / kappa_total_i)',
+    '# opacity_inside_native_group: piecewise constant for website re-collapse',
+    '# partial_native_group_overlap: log-weight integral evaluated only over overlap',
     '# extrapolation: disabled',
-    '# nonpositive_interpolation_policy: all-zero stencil returns zero; mixed zero/positive stencil returns nan',
+    '# nonpositive_interpolation_policy: all-zero T-rho stencil returns zero; mixed zero/positive T-rho stencil returns nan',
     `# temperature_count: ${query.temperatures.length}`,
     `# density_count: ${query.densities.length}`,
     `# output_group_count: ${query.energy.outputBinCount}`,
@@ -641,20 +708,492 @@ async function downloadSelection() {
   }
 }
 
+
+function showPlotError(message) {
+  elements.plotFormError.textContent = message;
+  elements.plotFormError.hidden = false;
+}
+
+function clearPlotError() {
+  elements.plotFormError.textContent = '';
+  elements.plotFormError.hidden = true;
+}
+
+function selectedPlotEnergyMode() {
+  return document.querySelector('input[name="plot-energy-mode"]:checked').value;
+}
+
+function plotFixedDensity() {
+  if (elements.plotDensityMode.value === 'native') {
+    return state.axes.rho_gcc[Number.parseInt(elements.plotDensitySelect.value, 10)];
+  }
+  const value = Number(elements.plotDensityCustom.value);
+  findLogBracket(state.axes.rho_gcc, value, 'Density');
+  return value;
+}
+
+function plotFixedTemperature() {
+  if (elements.plotTemperatureMode.value === 'native') {
+    return state.axes.temp_eV[Number.parseInt(elements.plotTemperatureSelect.value, 10)];
+  }
+  const value = Number(elements.plotTemperatureCustom.value);
+  findLogBracket(state.axes.temp_eV, value, 'Temperature');
+  return value;
+}
+
+function updatePlotPanels() {
+  if (!state.manifest) return;
+  const sweep = elements.plotSweepSelect.value;
+  const energyMode = selectedPlotEnergyMode();
+  elements.plotFixedDensityPanel.hidden = sweep !== 'temperature';
+  elements.plotFixedTemperaturePanel.hidden = sweep !== 'density';
+  elements.plotDensityNativeLabel.hidden = elements.plotDensityMode.value !== 'native';
+  elements.plotDensityCustomLabel.hidden = elements.plotDensityMode.value !== 'custom';
+  elements.plotTemperatureNativeLabel.hidden = elements.plotTemperatureMode.value !== 'native';
+  elements.plotTemperatureCustomLabel.hidden = elements.plotTemperatureMode.value !== 'custom';
+  elements.plotGroupPanel.hidden = energyMode !== 'group';
+  elements.plotIntegratedHelp.hidden = energyMode !== 'integrated';
+  if (energyMode === 'integrated') {
+    elements.plotIntegratedHelp.textContent = (
+      'Uses the conservative full-range weighted mean for the selected field: '
+      + 'Planck arithmetic for absorption and scattering, Rosseland harmonic for total opacity, '
+      + 'or Rosseland transport-weighted absorption.'
+    );
+  }
+  updatePlotSummary();
+}
+
+function groupEnergyLabel(group) {
+  const low = state.axes.hnu_ev_edges[group];
+  const high = state.axes.hnu_ev_edges[group + 1];
+  return `${formatScientific(low, 4)} – ${formatScientific(high, 4)} eV`;
+}
+
+function makeSpecificGroupPlotQuery(field, sweep, fixedValue, group) {
+  const temperatures = sweep === 'temperature' ? [...state.axes.temp_eV] : [fixedValue];
+  const densities = sweep === 'density' ? [...state.axes.rho_gcc] : [fixedValue];
+  const temperatureBrackets = temperatures.map((value) => (
+    findLogBracket(state.axes.temp_eV, value, 'Temperature')
+  ));
+  const densityBrackets = densities.map((value) => (
+    findLogBracket(state.axes.rho_gcc, value, 'Density')
+  ));
+  const energy = {
+    mode: 'native',
+    outputEdges: state.axes.hnu_ev_edges.slice(group, group + 2),
+    nativeGroupStart: group,
+    nativeGroupStopExclusive: group + 1,
+    outputBinCount: 1,
+  };
+  const chunks = uniqueRequiredChunks(field, temperatureBrackets, energy);
+  return {
+    field,
+    temperatures,
+    densities,
+    temperatureBrackets,
+    densityBrackets,
+    energy,
+    spectra: temperatures.length * densities.length,
+    rowCount: temperatures.length * densities.length,
+    chunks,
+    compressedBytes: chunks.reduce((sum, chunk) => sum + chunk.compressed_bytes, 0),
+  };
+}
+
+function getPlotDefinition() {
+  const field = elements.plotFieldSelect.value;
+  if (!(field in state.manifest.field_metadata)) {
+    throw new Error(`Unknown opacity field: ${field}`);
+  }
+  const sweep = elements.plotSweepSelect.value;
+  const fixedValue = sweep === 'temperature' ? plotFixedDensity() : plotFixedTemperature();
+  const energyMode = selectedPlotEnergyMode();
+  const pointCount = sweep === 'temperature'
+    ? state.axes.temp_eV.length
+    : state.axes.rho_gcc.length;
+
+  if (energyMode === 'integrated') {
+    const info = state.plotManifest.fields[field];
+    if (!info) throw new Error(`Integrated plot data are missing for ${field}.`);
+    return {
+      field,
+      sweep,
+      fixedValue,
+      energyMode,
+      pointCount,
+      compressedBytes: info.compressed_bytes,
+      energyLabel: field === 'kplanck_scattering'
+        ? 'Full published energy range — Planck-weighted arithmetic mean'
+        : 'Full published energy range — weighted mean',
+    };
+  }
+
+  const group = Number.parseInt(elements.plotGroupInput.value, 10);
+  const groupCount = state.manifest.dimensions.groups;
+  if (!Number.isInteger(group) || group < 0 || group >= groupCount) {
+    throw new Error(`Native group must be an integer from 0 to ${groupCount - 1}.`);
+  }
+  const query = makeSpecificGroupPlotQuery(field, sweep, fixedValue, group);
+  return {
+    field,
+    sweep,
+    fixedValue,
+    energyMode,
+    group,
+    pointCount,
+    compressedBytes: query.compressedBytes,
+    energyLabel: `Group ${group}: ${groupEnergyLabel(group)}`,
+    query,
+  };
+}
+
+function updatePlotSummary() {
+  if (!state.plotManifest) return;
+  clearPlotError();
+  try {
+    const definition = getPlotDefinition();
+    elements.plotPointSummary.textContent = definition.pointCount.toLocaleString();
+    elements.plotTransferSummary.textContent = formatBytes(definition.compressedBytes);
+    elements.plotEnergySummary.textContent = definition.energyLabel;
+    const group = Math.max(
+      0,
+      Math.min(
+        state.manifest.dimensions.groups - 1,
+        Number.parseInt(elements.plotGroupInput.value, 10) || 0,
+      ),
+    );
+    elements.plotGroupRange.textContent = groupEnergyLabel(group);
+  } catch (error) {
+    elements.plotPointSummary.textContent = '—';
+    elements.plotTransferSummary.textContent = '—';
+    elements.plotEnergySummary.textContent = '—';
+    showPlotError(error.message);
+  }
+}
+
+function readGreyValue(values, rhoIndex, temperatureIndex) {
+  const temperatureCount = state.axes.temp_eV.length;
+  return values[rhoIndex * temperatureCount + temperatureIndex];
+}
+
+function integratedPlotPoints(definition, values) {
+  const points = [];
+  if (definition.sweep === 'temperature') {
+    const densityBracket = findLogBracket(
+      state.axes.rho_gcc, definition.fixedValue, 'Density',
+    );
+    for (let ti = 0; ti < state.axes.temp_eV.length; ti += 1) {
+      const temperatureBracket = {
+        lowerIndex: ti,
+        upperIndex: ti,
+        fraction: 0,
+        exact: true,
+      };
+      const result = interpolateOpacityLogLog(
+        (temperatureIndex, rhoIndex) => readGreyValue(values, rhoIndex, temperatureIndex),
+        temperatureBracket,
+        densityBracket,
+      );
+      points.push({ x: state.axes.temp_eV[ti], y: result.value, status: result.status });
+    }
+  } else {
+    const temperatureBracket = findLogBracket(
+      state.axes.temp_eV, definition.fixedValue, 'Temperature',
+    );
+    for (let ri = 0; ri < state.axes.rho_gcc.length; ri += 1) {
+      const densityBracket = {
+        lowerIndex: ri,
+        upperIndex: ri,
+        fraction: 0,
+        exact: true,
+      };
+      const result = interpolateOpacityLogLog(
+        (temperatureIndex, rhoIndex) => readGreyValue(values, rhoIndex, temperatureIndex),
+        temperatureBracket,
+        densityBracket,
+      );
+      points.push({ x: state.axes.rho_gcc[ri], y: result.value, status: result.status });
+    }
+  }
+  return points;
+}
+
+async function specificGroupPlotPoints(definition) {
+  const loadedChunks = await loadQueryChunks(definition.query);
+  const points = [];
+  forEachResult(definition.query, loadedChunks, (row) => {
+    points.push({
+      x: definition.sweep === 'temperature' ? row.temperature : row.density,
+      y: row.opacity,
+      status: row.status,
+    });
+  });
+  return points;
+}
+
+function svgElement(name, attributes = {}, text = '') {
+  const element = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, String(value));
+  }
+  if (text) element.textContent = text;
+  return element;
+}
+
+function logarithmicTicks(minimum, maximum, maximumTicks = 9) {
+  const lowPower = Math.floor(Math.log10(minimum));
+  const highPower = Math.ceil(Math.log10(maximum));
+  const span = Math.max(1, highPower - lowPower);
+  const step = Math.max(1, Math.ceil(span / maximumTicks));
+  const ticks = [];
+  for (let power = lowPower; power <= highPower; power += step) {
+    const value = 10 ** power;
+    if (value >= minimum / 1.000001 && value <= maximum * 1.000001) {
+      ticks.push({ value, label: `10^${power}` });
+    }
+  }
+  if (ticks.length === 0) ticks.push({ value: minimum, label: formatScientific(minimum, 2) });
+  return ticks;
+}
+
+function linearTicks(minimum, maximum, count = 6) {
+  if (minimum === maximum) return [{ value: minimum, label: formatScientific(minimum, 2) }];
+  return Array.from({ length: count }, (_, index) => {
+    const value = minimum + (index / (count - 1)) * (maximum - minimum);
+    return { value, label: formatScientific(value, 2) };
+  });
+}
+
+function renderLinePlot(definition, points) {
+  const width = 920;
+  const height = 540;
+  const margin = { left: 92, right: 28, top: 28, bottom: 76 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+  const logX = elements.plotLogX.checked;
+  const logY = elements.plotLogY.checked;
+  const { drawable, xMin, xMax, yMin, yMax } = preparePlotDomain(
+    points, logX, logY,
+  );
+
+  const xProject = logX
+    ? (value) => margin.left + (
+      (Math.log(value) - Math.log(xMin)) / (Math.log(xMax) - Math.log(xMin))
+    ) * innerWidth
+    : (value) => margin.left + ((value - xMin) / (xMax - xMin)) * innerWidth;
+  const yProject = logY
+    ? (value) => margin.top + innerHeight - (
+      (Math.log(value) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))
+    ) * innerHeight
+    : (value) => margin.top + innerHeight - (
+      (value - yMin) / (yMax - yMin)
+    ) * innerHeight;
+
+  const svg = svgElement('svg', {
+    viewBox: `0 0 ${width} ${height}`,
+    class: 'opacity-line-svg',
+    preserveAspectRatio: 'xMidYMid meet',
+  });
+  svg.append(svgElement('rect', {
+    x: margin.left,
+    y: margin.top,
+    width: innerWidth,
+    height: innerHeight,
+    class: 'plot-background',
+  }));
+
+  const xTicks = logX ? logarithmicTicks(xMin, xMax) : linearTicks(xMin, xMax);
+  const yTicks = logY ? logarithmicTicks(yMin, yMax) : linearTicks(yMin, yMax);
+
+  for (const tick of yTicks) {
+    const y = yProject(tick.value);
+    svg.append(svgElement('line', {
+      x1: margin.left,
+      x2: margin.left + innerWidth,
+      y1: y,
+      y2: y,
+      class: 'plot-grid-line',
+    }));
+    svg.append(svgElement('text', {
+      x: margin.left - 12,
+      y: y + 5,
+      class: 'plot-tick-label y-tick-label',
+      'text-anchor': 'end',
+    }, tick.label));
+  }
+
+  for (const tick of xTicks) {
+    const x = xProject(tick.value);
+    svg.append(svgElement('line', {
+      x1: x,
+      x2: x,
+      y1: margin.top,
+      y2: margin.top + innerHeight,
+      class: 'plot-grid-line',
+    }));
+    svg.append(svgElement('text', {
+      x,
+      y: margin.top + innerHeight + 26,
+      class: 'plot-tick-label',
+      'text-anchor': 'middle',
+    }, tick.label));
+  }
+
+  svg.append(svgElement('line', {
+    x1: margin.left,
+    x2: margin.left,
+    y1: margin.top,
+    y2: margin.top + innerHeight,
+    class: 'plot-axis-line',
+  }));
+  svg.append(svgElement('line', {
+    x1: margin.left,
+    x2: margin.left + innerWidth,
+    y1: margin.top + innerHeight,
+    y2: margin.top + innerHeight,
+    class: 'plot-axis-line',
+  }));
+
+  let pathData = '';
+  let penDown = false;
+  for (const point of points) {
+    if (!isDrawablePoint(point, logX, logY)) {
+      penDown = false;
+      continue;
+    }
+    const x = xProject(point.x);
+    const y = yProject(point.y);
+    pathData += `${penDown ? ' L' : ' M'} ${x.toFixed(3)} ${y.toFixed(3)}`;
+    penDown = true;
+  }
+  svg.append(svgElement('path', { d: pathData.trim(), class: 'plot-data-line' }));
+
+  for (const point of drawable) {
+    const circle = svgElement('circle', {
+      cx: xProject(point.x),
+      cy: yProject(point.y),
+      r: 2.6,
+      class: 'plot-data-point',
+    });
+    circle.append(svgElement('title', {}, (
+      `x=${point.x.toExponential(8)}; opacity=${point.y.toExponential(8)}; status=${point.status}`
+    )));
+    svg.append(circle);
+  }
+
+  const xLabel = definition.sweep === 'temperature'
+    ? `Temperature [eV]${logX ? ' — log scale' : ' — linear scale'}`
+    : `Density [g cm⁻³]${logX ? ' — log scale' : ' — linear scale'}`;
+  svg.append(svgElement('text', {
+    x: margin.left + innerWidth / 2,
+    y: height - 20,
+    class: 'plot-axis-label',
+    'text-anchor': 'middle',
+  }, xLabel));
+  svg.append(svgElement('text', {
+    x: 24,
+    y: margin.top + innerHeight / 2,
+    class: 'plot-axis-label',
+    'text-anchor': 'middle',
+    transform: `rotate(-90 24 ${margin.top + innerHeight / 2})`,
+  }, `Opacity [cm² g⁻¹] — ${logY ? 'log' : 'linear'} scale`));
+
+  elements.plotChart.replaceChildren(svg);
+  const metadata = state.manifest.field_metadata[definition.field];
+  const fixedLabel = definition.sweep === 'temperature'
+    ? `density = ${formatScientific(definition.fixedValue)} g cm⁻³`
+    : `temperature = ${formatScientific(definition.fixedValue)} eV`;
+  elements.plotDescription.textContent = (
+    `${metadata.label}; ${fixedLabel}; ${definition.energyLabel}.`
+  );
+
+  const omitted = points.length - drawable.length;
+  const warnings = points.filter((point) => (
+    point.status !== 'ok' && point.status !== 'ok_zero'
+  )).length;
+  elements.plotWarningBadge.textContent = `${drawable.length} plotted; ${omitted} omitted`;
+  if (logY) {
+    elements.plotZeroNote.textContent = omitted > 0
+      ? `${omitted} zero, non-finite, negative, or invalid points cannot be represented on a logarithmic y-axis and are shown as gaps. ${warnings} points had interpolation warnings.`
+      : `${warnings} points had interpolation warnings.`;
+  } else {
+    elements.plotZeroNote.textContent = omitted > 0
+      ? `${omitted} non-finite, negative, or invalid points are shown as gaps. Zero opacities are displayed on the linear y-axis. ${warnings} points had interpolation warnings.`
+      : `Zero opacities are displayed normally on the linear y-axis. ${warnings} points had interpolation warnings.`;
+  }
+  elements.plotSection.hidden = false;
+  elements.plotSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function drawPlot() {
+  clearPlotError();
+  try {
+    const definition = getPlotDefinition();
+    setBusy(true, `Loading line-plot data (${formatBytes(definition.compressedBytes)})…`);
+    let points;
+    if (definition.energyMode === 'integrated') {
+      const values = await loadPlotField(definition.field);
+      points = integratedPlotPoints(definition, values);
+    } else {
+      points = await specificGroupPlotPoints(definition);
+    }
+    renderLinePlot(definition, points);
+    state.lastPlot = { definition, points };
+    elements.plotDownloadButton.disabled = false;
+  } catch (error) {
+    showPlotError(error.message);
+  } finally {
+    setBusy(false);
+  }
+}
+
+function downloadPlotCsv() {
+  if (!state.lastPlot) return;
+  const { definition, points } = state.lastPlot;
+  const xName = definition.sweep === 'temperature' ? 'temperature_eV' : 'density_g_cm-3';
+  const lines = [
+    `# GLOW line plot`,
+    `# field: ${definition.field}`,
+    `# energy: ${definition.energyLabel}`,
+    `# x_axis: ${xName}`,
+    `# y_axis: opacity_cm2_g-1 (${elements.plotLogY.checked ? 'log display' : 'linear display'})`,
+    `${xName},opacity_cm2_g-1,status`,
+  ];
+  for (const point of points) {
+    lines.push([
+      point.x.toExponential(16),
+      Number.isFinite(point.y) ? point.y.toExponential(16) : 'nan',
+      point.status,
+    ].join(','));
+  }
+  const blob = new Blob([`${lines.join('\n')}\n`], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = `GLOW_plot_${definition.field}_${definition.sweep}_${definition.energyMode}.csv`;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
 function populateControls() {
   for (const [field, metadata] of Object.entries(state.manifest.field_metadata)) {
     const option = document.createElement('option');
     option.value = field;
     option.textContent = metadata.label;
     elements.fieldSelect.append(option);
+    elements.plotFieldSelect.append(option.cloneNode(true));
   }
   elements.fieldSelect.value = 'kplanck';
+  elements.plotFieldSelect.value = 'kplanck';
 
   state.axes.temp_eV.forEach((temperature, index) => {
     const option = document.createElement('option');
     option.value = String(index);
     option.textContent = `${index}: ${formatScientific(temperature, 5)} eV`;
     elements.temperatureSelect.append(option);
+    elements.plotTemperatureSelect.append(option.cloneNode(true));
   });
 
   state.axes.rho_gcc.forEach((density, index) => {
@@ -663,6 +1202,7 @@ function populateControls() {
     option.textContent = `${index}: ${formatScientific(density, 5)}`;
     elements.densityMinSelect.append(option);
     elements.densityMaxSelect.append(option.cloneNode(true));
+    elements.plotDensitySelect.append(option.cloneNode(true));
   });
   elements.densityMinSelect.value = '0';
   elements.densityMaxSelect.value = String(Math.min(7, state.axes.rho_gcc.length - 1));
@@ -675,6 +1215,12 @@ function populateControls() {
   const nativeEdges = state.axes.hnu_ev_edges;
   elements.energyLogMin.value = String(nativeEdges[0]);
   elements.energyLogMax.value = String(nativeEdges[nativeEdges.length - 1]);
+
+  elements.plotGroupInput.max = String(maximumGroup);
+  elements.plotDensitySelect.value = String(Math.floor(state.axes.rho_gcc.length / 2));
+  elements.plotTemperatureSelect.value = String(Math.floor(state.axes.temp_eV.length / 2));
+  elements.plotDensityCustom.value = String(state.axes.rho_gcc[Math.floor(state.axes.rho_gcc.length / 2)]);
+  elements.plotTemperatureCustom.value = String(state.axes.temp_eV[Math.floor(state.axes.temp_eV.length / 2)]);
 }
 
 function attachEvents() {
@@ -701,16 +1247,39 @@ function attachEvents() {
 
   elements.previewButton.addEventListener('click', previewSelection);
   elements.downloadButton.addEventListener('click', downloadSelection);
+
+  [
+    elements.plotFieldSelect,
+    elements.plotSweepSelect,
+    elements.plotLogX,
+    elements.plotLogY,
+    elements.plotDensityMode,
+    elements.plotDensitySelect,
+    elements.plotDensityCustom,
+    elements.plotTemperatureMode,
+    elements.plotTemperatureSelect,
+    elements.plotTemperatureCustom,
+    elements.plotGroupInput,
+  ].forEach((control) => {
+    control.addEventListener('input', updatePlotPanels);
+    control.addEventListener('change', updatePlotPanels);
+  });
+  document.querySelectorAll('input[name="plot-energy-mode"]')
+    .forEach((radio) => radio.addEventListener('change', updatePlotPanels));
+  elements.plotButton.addEventListener('click', drawPlot);
+  elements.plotDownloadButton.addEventListener('click', downloadPlotCsv);
 }
 
 async function initialize() {
   try {
-    const [manifest, axes] = await Promise.all([
+    const [manifest, axes, plotManifest] = await Promise.all([
       fetchJson(MANIFEST_URL),
       fetchJson(AXES_URL),
+      fetchJson(PLOT_MANIFEST_URL),
     ]);
     state.manifest = manifest;
     state.axes = axes;
+    state.plotManifest = plotManifest;
 
     if (manifest.dimensions.groups !== 1024) {
       throw new Error(`Expected 1024 native groups, found ${manifest.dimensions.groups}.`);
@@ -723,12 +1292,19 @@ async function initialize() {
         axes.hnu_ev_edges.length !== manifest.dimensions.groups + 1) {
       throw new Error('Axis lengths disagree with the manifest.');
     }
+    if (plotManifest.dimensions.temperatures !== manifest.dimensions.temperatures ||
+        plotManifest.dimensions.densities !== manifest.dimensions.densities ||
+        plotManifest.axis_order.join(',') !== 'rho,temp') {
+      throw new Error('Integrated plot data disagree with the main dataset axes.');
+    }
 
     populateControls();
     attachEvents();
     elements.form.hidden = false;
+    elements.plotForm.hidden = false;
     elements.loadingMessage.hidden = true;
     updateModePanels();
+    updatePlotPanels();
   } catch (error) {
     elements.loadingMessage.textContent = `Dataset initialization failed: ${error.message}`;
     elements.loadingMessage.classList.add('error');

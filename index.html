@@ -2,18 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-  <meta
-    name="description"
-    content="Explore and download GLOW multigroup opacity tables."
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interpolate and collapse GLOW multigroup opacity tables.">
   <title>GLOW Opacity Tables</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <header class="site-header">
     <div class="header-content">
@@ -21,11 +14,10 @@
         <p class="eyebrow">Public astrophysical opacity tables</p>
         <h1>GLOW</h1>
         <p class="subtitle">
-          Explore and download multigroup opacities for
-          low-density astrophysical plasmas.
+          Interpolate temperature and density in log space, then collapse the
+          1024 native energy groups with Planck or Rosseland weighting.
         </p>
       </div>
-
       <div class="dataset-badge">
         <span>Full dataset</span>
         <strong>Solar composition</strong>
@@ -35,107 +27,159 @@
 
   <main>
     <section class="card introduction">
-      <h2>Solar-composition multigroup opacities</h2>
+      <h2>Custom opacity queries</h2>
       <p>
-        Explore the full GLOW solar-composition multigroup-opacity
-        dataset. Select an opacity definition, temperature, density
-        range, and photon-energy group range. Only the required data
-        chunks will be downloaded.
+        Choose native coordinates or enter physical temperature and density
+        values. Custom values are interpolated linearly in
+        <code>log(T)</code>, <code>log(rho)</code>, and
+        <code>log(kappa)</code>. Energy regrouping uses the weighting associated
+        with the selected opacity field.
+      </p>
+      <p class="notice">
+        Custom energy edges that cut through a native group treat that native
+        opacity as constant within the group while integrating the physical
+        weight only over the overlapping energy interval.
       </p>
     </section>
 
     <section class="card">
-      <h2>Table selection</h2>
-
-      <div id="loading-message" class="status">
-        Loading dataset metadata…
-      </div>
+      <h2>Query definition</h2>
+      <div id="loading-message" class="status">Loading dataset metadata…</div>
 
       <form id="selection-form" hidden>
-        <div class="form-grid">
+        <div class="query-section">
+          <h3>Opacity</h3>
           <label>
-            Opacity
+            Opacity field
             <select id="field-select"></select>
           </label>
+        </div>
 
-          <label>
-            Temperature
-            <select id="temperature-select"></select>
-          </label>
+        <div class="query-section">
+          <h3>Temperature</h3>
+          <div class="mode-row" role="radiogroup" aria-label="Temperature input mode">
+            <label class="radio-label">
+              <input type="radio" name="temperature-mode" value="native" checked>
+              Native table value
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="temperature-mode" value="custom">
+              Custom value or list
+            </label>
+          </div>
+          <div id="temperature-native-panel" class="mode-panel">
+            <label>
+              Native temperature
+              <select id="temperature-select"></select>
+            </label>
+          </div>
+          <div id="temperature-custom-panel" class="mode-panel" hidden>
+            <label>
+              Temperatures [eV]
+              <textarea id="temperature-list" rows="4" placeholder="0.5, 1, 3, 10, 100"></textarea>
+            </label>
+            <p class="help">Separate values with commas, semicolons, spaces, or new lines.</p>
+          </div>
+        </div>
 
-          <label>
-            Minimum density
-            <select id="density-min-select"></select>
-          </label>
+        <div class="query-section">
+          <h3>Density</h3>
+          <div class="mode-row" role="radiogroup" aria-label="Density input mode">
+            <label class="radio-label">
+              <input type="radio" name="density-mode" value="native" checked>
+              Native table range
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="density-mode" value="custom">
+              Custom value or list
+            </label>
+          </div>
+          <div id="density-native-panel" class="mode-panel form-grid two-columns">
+            <label>
+              Minimum native density
+              <select id="density-min-select"></select>
+            </label>
+            <label>
+              Maximum native density
+              <select id="density-max-select"></select>
+            </label>
+          </div>
+          <div id="density-custom-panel" class="mode-panel" hidden>
+            <label>
+              Densities [g cm<sup>-3</sup>]
+              <textarea id="density-list" rows="4" placeholder="1e-16, 1e-14, 1e-12, 1e-10"></textarea>
+            </label>
+            <p class="help">Separate values with commas, semicolons, spaces, or new lines.</p>
+          </div>
+        </div>
 
-          <label>
-            Maximum density
-            <select id="density-max-select"></select>
-          </label>
+        <div class="query-section">
+          <h3>Energy groups</h3>
+          <div class="mode-row" role="radiogroup" aria-label="Energy input mode">
+            <label class="radio-label">
+              <input type="radio" name="energy-mode" value="native" checked>
+              Native groups
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="energy-mode" value="custom">
+              Custom output edges
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="energy-mode" value="log">
+              N logarithmic groups
+            </label>
+          </div>
 
-          <label>
-            First energy group
-            <input
-              id="group-min-input"
-              type="number"
-              min="0"
-              step="1"
-              value="0"
-              required
-            >
-          </label>
+          <div id="energy-native-panel" class="mode-panel form-grid two-columns">
+            <label>
+              First native group
+              <input id="group-min-input" type="number" min="0" step="1" value="0" required>
+            </label>
+            <label>
+              Last native group
+              <input id="group-max-input" type="number" min="0" step="1" value="127" required>
+            </label>
+          </div>
 
-          <label>
-            Last energy group
-            <input
-              id="group-max-input"
-              type="number"
-              min="0"
-              step="1"
-              value="127"
-              required
-            >
-          </label>
+          <div id="energy-custom-panel" class="mode-panel" hidden>
+            <label>
+              Output energy edges [eV]
+              <textarea id="energy-edge-list" rows="4" placeholder="0.01, 0.1, 1, 10, 100, 1000"></textarea>
+            </label>
+            <p class="help">N+1 strictly increasing edges define N output groups.</p>
+          </div>
+
+          <div id="energy-log-panel" class="mode-panel form-grid three-columns" hidden>
+            <label>
+              Minimum energy [eV]
+              <input id="energy-log-min" type="number" min="0" step="any">
+            </label>
+            <label>
+              Maximum energy [eV]
+              <input id="energy-log-max" type="number" min="0" step="any">
+            </label>
+            <label>
+              Output groups
+              <input id="energy-log-count" type="number" min="1" max="1024" step="1" value="128">
+            </label>
+          </div>
         </div>
 
         <div class="summary-panel">
           <dl>
-            <div>
-              <dt>Temperature</dt>
-              <dd id="temperature-summary">—</dd>
-            </div>
-
-            <div>
-              <dt>Density points</dt>
-              <dd id="density-summary">—</dd>
-            </div>
-
-            <div>
-              <dt>Energy groups</dt>
-              <dd id="group-summary">—</dd>
-            </div>
-
-            <div>
-              <dt>Estimated transfer</dt>
-              <dd id="transfer-summary">—</dd>
-            </div>
+            <div><dt>Temperatures</dt><dd id="temperature-summary">—</dd></div>
+            <div><dt>Densities</dt><dd id="density-summary">—</dd></div>
+            <div><dt>Output groups</dt><dd id="group-summary">—</dd></div>
+            <div><dt>Output rows</dt><dd id="row-summary">—</dd></div>
+            <div><dt>Required chunks</dt><dd id="chunk-summary">—</dd></div>
+            <div><dt>Estimated transfer</dt><dd id="transfer-summary">—</dd></div>
           </dl>
         </div>
 
         <div id="form-error" class="error" hidden></div>
-
         <div class="button-row">
-          <button id="preview-button" type="button">
-            Load preview
-          </button>
-
-          <button
-            id="download-button"
-            type="button"
-            class="secondary"
-          >
-            Download TXT
-          </button>
+          <button id="preview-button" type="button">Load preview</button>
+          <button id="download-button" type="button" class="secondary">Download TXT</button>
         </div>
       </form>
     </section>
@@ -146,46 +190,173 @@
           <h2>Preview</h2>
           <p id="preview-description"></p>
         </div>
-
         <span id="preview-limit" class="small-badge"></span>
       </div>
-
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th>Group</th>
-              <th>Energy lower edge [eV]</th>
-              <th>Energy upper edge [eV]</th>
-              <th>Density [g cm⁻³]</th>
               <th>Temperature [eV]</th>
-              <th>Opacity [cm² g⁻¹]</th>
+              <th>Density [g cm<sup>-3</sup>]</th>
+              <th>Output group</th>
+              <th>Energy low [eV]</th>
+              <th>Energy high [eV]</th>
+              <th>Opacity [cm<sup>2</sup> g<sup>-1</sup>]</th>
+              <th>Status</th>
             </tr>
           </thead>
-
           <tbody id="preview-body"></tbody>
         </table>
       </div>
     </section>
 
+    <section class="card" id="plot-controls-card">
+      <div class="section-heading">
+        <div>
+          <h2>Line plots</h2>
+          <p>
+            Plot an opacity field along the full published temperature or
+            density axis. Choose logarithmic or linear scaling independently for each axis.
+          </p>
+        </div>
+      </div>
+
+      <form id="plot-form" hidden>
+        <div class="form-grid three-columns">
+          <label>
+            Dataset
+            <select id="plot-field-select"></select>
+          </label>
+
+          <label>
+            Vary along x-axis
+            <select id="plot-sweep-select">
+              <option value="temperature">Temperature, at fixed density</option>
+              <option value="density">Density, at fixed temperature</option>
+            </select>
+          </label>
+
+          <label class="checkbox-label">
+            <input id="plot-log-x" type="checkbox" checked>
+            Logarithmic x-axis
+          </label>
+
+          <label class="checkbox-label">
+            <input id="plot-log-y" type="checkbox" checked>
+            Logarithmic y-axis
+          </label>
+        </div>
+
+        <div id="plot-fixed-density-panel" class="mode-panel form-grid two-columns">
+          <label>
+            Fixed-density input
+            <select id="plot-density-mode">
+              <option value="native">Native density</option>
+              <option value="custom">Custom density</option>
+            </select>
+          </label>
+          <label id="plot-density-native-label">
+            Fixed density [g cm<sup>-3</sup>]
+            <select id="plot-density-select"></select>
+          </label>
+          <label id="plot-density-custom-label" hidden>
+            Fixed density [g cm<sup>-3</sup>]
+            <input id="plot-density-custom" type="number" min="0" step="any">
+          </label>
+        </div>
+
+        <div id="plot-fixed-temperature-panel" class="mode-panel form-grid two-columns" hidden>
+          <label>
+            Fixed-temperature input
+            <select id="plot-temperature-mode">
+              <option value="native">Native temperature</option>
+              <option value="custom">Custom temperature</option>
+            </select>
+          </label>
+          <label id="plot-temperature-native-label">
+            Fixed temperature [eV]
+            <select id="plot-temperature-select"></select>
+          </label>
+          <label id="plot-temperature-custom-label" hidden>
+            Fixed temperature [eV]
+            <input id="plot-temperature-custom" type="number" min="0" step="any">
+          </label>
+        </div>
+
+        <div class="query-section compact-section">
+          <h3>Energy treatment</h3>
+          <div class="mode-row" role="radiogroup" aria-label="Plot energy treatment">
+            <label class="radio-label">
+              <input type="radio" name="plot-energy-mode" value="group" checked>
+              Specific native group
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="plot-energy-mode" value="integrated">
+              Full-range weighted mean
+            </label>
+          </div>
+          <div id="plot-group-panel" class="mode-panel form-grid two-columns">
+            <label>
+              Native group index
+              <input id="plot-group-input" type="number" min="0" step="1" value="0">
+            </label>
+            <div class="plot-group-range">
+              <span>Energy interval</span>
+              <strong id="plot-group-range">—</strong>
+            </div>
+          </div>
+          <p id="plot-integrated-help" class="help" hidden></p>
+        </div>
+
+        <div class="summary-panel plot-summary-panel">
+          <dl>
+            <div><dt>Curve points</dt><dd id="plot-point-summary">—</dd></div>
+            <div><dt>Estimated transfer</dt><dd id="plot-transfer-summary">—</dd></div>
+            <div><dt>Energy</dt><dd id="plot-energy-summary">—</dd></div>
+          </dl>
+        </div>
+
+        <div id="plot-form-error" class="error" hidden></div>
+        <div class="button-row">
+          <button id="plot-button" type="button">Draw line plot</button>
+          <button id="plot-download-button" type="button" class="secondary" disabled>
+            Download plot CSV
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="plot-section" class="card" hidden>
+      <div class="section-heading">
+        <div>
+          <h2>Opacity line plot</h2>
+          <p id="plot-description"></p>
+        </div>
+        <span id="plot-warning-badge" class="small-badge"></span>
+      </div>
+      <div id="plot-chart" class="plot-chart" role="img" aria-label="Opacity line plot"></div>
+      <p id="plot-zero-note" class="help"></p>
+    </section>
+
     <section class="card notes">
-      <h2>Data layout</h2>
+      <h2>Numerical conventions</h2>
       <p>
-        Stored arrays use the axis order
-        <code>group, density, temperature</code>.
-        Browser chunks are gzip-compressed little-endian
-        <code>float64</code> arrays.
+        <code>kplanck</code> and <code>kplanck_scattering</code> are regrouped
+        with Planck-weighted arithmetic means. <code>krosseland</code> uses a
+        Rosseland harmonic mean.
+        <code>krosseland_absorption</code> retains its original Rosseland
+        flux-weighted form with the total Rosseland opacity in the transport
+        denominator. Published 1024-group values are treated as piecewise
+        constant inside each native group. Extrapolation outside the published
+        temperature, density, and energy ranges is disabled.
       </p>
     </section>
   </main>
 
   <footer>
-    <p>
-      GLOW — A Public Library of Multigroup Opacities Extending to
-      Low-Density Astrophysical Plasmas
-    </p>
+    <p>GLOW — Group-resolved Low-density Opacity Warehouse</p>
   </footer>
 
-  <script src="app.js" defer></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

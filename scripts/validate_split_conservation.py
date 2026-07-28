@@ -12,13 +12,13 @@ Expected split fields:
     kplanck
     krosseland
     krosseland_absorption
-    kross_scattering
+    kplanck_scattering
 
 The regrouping conventions are:
     Planck:
         sum(P_g * kP_g) / sum(P_g)
 
-    Rosseland total and scattering:
+    Rosseland total:
         sum(R_g) / sum(R_g / kR_g)
 
     Rosseland flux-weighted absorption:
@@ -46,7 +46,7 @@ FIELDS = (
     "kplanck",
     "krosseland",
     "krosseland_absorption",
-    "kross_scattering",
+    "kplanck_scattering",
 )
 
 ROSS_C = 15.0 / (4.0 * math.pi**4)
@@ -638,9 +638,9 @@ def main() -> int:
             fields["krosseland"],
             log_rosseland,
         ),
-        "kross_scattering": harmonic_regroup(
-            fields["kross_scattering"],
-            log_rosseland,
+        "kplanck_scattering": arithmetic_regroup_simple(
+            fields["kplanck_scattering"],
+            log_planck,
         ),
         "krosseland_absorption": absorption_regroup(
             fields["krosseland_absorption"],
@@ -707,7 +707,7 @@ def main() -> int:
 
     print(
         "PASS: split tables preserve the direct one-group Planck, "
-        "Rosseland, scattering, and flux-weighted absorption means."
+        "Rosseland, Planck-scattering, and flux-weighted absorption means."
     )
     return 0
 

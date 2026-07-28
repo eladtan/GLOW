@@ -2,15 +2,13 @@ export const COLLAPSE_KIND = Object.freeze({
   kplanck: 'planck',
   krosseland: 'rosseland_harmonic',
   krosseland_absorption: 'rosseland_absorption',
-  kross_scattering: 'rosseland_harmonic',
+  kplanck_scattering: 'planck',
 });
 
 export function requiredFieldsForCollapse(field) {
   const kind = COLLAPSE_KIND[field];
   if (!kind) throw new Error(`Unknown opacity field: ${field}`);
-  return kind === 'rosseland_absorption'
-    ? [field, 'krosseland']
-    : [field];
+  return kind === 'rosseland_absorption' ? [field, 'krosseland'] : [field];
 }
 
 const GL32_X = Object.freeze([
@@ -216,56 +214,82 @@ export function interpolateOpacityLogLog(getValue, temperatureBracket, densityBr
   return { value: Math.exp(logValue / totalWeight), status: 'ok' };
 }
 
-function planckIntegrand(x) {
-  if (x <= 0) return 0;
-  if (x < 1e-4) {
-    const x2 = x * x;
-    return x2 * (1 - x / 2 + x2 / 12);
-  }
-  if (x > 745) return 0;
-  return (x * x * x) / Math.expm1(x);
+function logExpm1Positive(x) {
+  if (!(x > 0) || !Number.isFinite(x)) return Number.NEGATIVE_INFINITY;
+  if (x < 50) return Math.log(Math.expm1(x));
+  return x + Math.log1p(-Math.exp(-x));
 }
 
-function rosselandIntegrand(x) {
-  if (x <= 0) return 0;
-  if (x < 1e-4) {
-    const x2 = x * x;
-    return x2 * (1 - x2 / 12 + (x2 * x2) / 240);
-  }
-  if (x > 370) return 0;
-  const em = Math.exp(-x);
-  const denominator = 1 - em;
-  return x ** 4 * em / (denominator * denominator);
+export function logPlanckIntegrand(x) {
+  if (!(x > 0) || !Number.isFinite(x)) return Number.NEGATIVE_INFINITY;
+  return 3 * Math.log(x) - logExpm1Positive(x);
 }
 
-function gaussLegendre32(integrand, lower, upper) {
-  if (!(upper > lower)) return 0;
+export function logRosselandIntegrand(x) {
+  if (!(x > 0) || !Number.isFinite(x)) return Number.NEGATIVE_INFINITY;
+  return 4 * Math.log(x) - x - 2 * Math.log(-Math.expm1(-x));
+}
+
+function logSumExp(values) {
+  let maximum = Number.NEGATIVE_INFINITY;
+  for (const value of values) {
+    if (value > maximum) maximum = value;
+  }
+  if (!Number.isFinite(maximum)) return Number.NEGATIVE_INFINITY;
+  let sum = 0;
+  for (const value of values) {
+    if (Number.isFinite(value)) sum += Math.exp(value - maximum);
+  }
+  return maximum + Math.log(sum);
+}
+
+function gaussLegendre32LogIntegral(logIntegrand, lower, upper) {
+  if (!(upper > lower)) return Number.NEGATIVE_INFINITY;
   const midpoint = 0.5 * (lower + upper);
   const halfWidth = 0.5 * (upper - lower);
-  let sum = 0;
+  const terms = [];
   for (let i = 0; i < GL32_X.length; i += 1) {
     const offset = halfWidth * GL32_X[i];
-    sum += GL32_W[i] * (
-      integrand(midpoint - offset) + integrand(midpoint + offset)
-    );
+    const logQuadratureWeight = Math.log(GL32_W[i]);
+    terms.push(logQuadratureWeight + logIntegrand(midpoint - offset));
+    terms.push(logQuadratureWeight + logIntegrand(midpoint + offset));
   }
-  return halfWidth * sum;
+  return Math.log(halfWidth) + logSumExp(terms);
 }
 
-export function integratePlanckWeight(energyLow, energyHigh, temperature) {
+export function integrateLogPlanckWeight(energyLow, energyHigh, temperature) {
   assertFinitePositive(energyLow, 'Lower energy');
   assertFinitePositive(energyHigh, 'Upper energy');
   assertFinitePositive(temperature, 'Temperature');
-  if (!(energyHigh > energyLow)) return 0;
-  return gaussLegendre32(planckIntegrand, energyLow / temperature, energyHigh / temperature);
+  if (!(energyHigh > energyLow)) return Number.NEGATIVE_INFINITY;
+  return gaussLegendre32LogIntegral(
+    logPlanckIntegrand,
+    energyLow / temperature,
+    energyHigh / temperature,
+  );
+}
+
+export function integrateLogRosselandWeight(energyLow, energyHigh, temperature) {
+  assertFinitePositive(energyLow, 'Lower energy');
+  assertFinitePositive(energyHigh, 'Upper energy');
+  assertFinitePositive(temperature, 'Temperature');
+  if (!(energyHigh > energyLow)) return Number.NEGATIVE_INFINITY;
+  return gaussLegendre32LogIntegral(
+    logRosselandIntegrand,
+    energyLow / temperature,
+    energyHigh / temperature,
+  );
+}
+
+// Compatibility helpers. The collapse engine itself never exponentiates an
+// absolute weight; it operates on logarithmic weights so Wien-tail factors
+// cancel before exponentiation.
+export function integratePlanckWeight(energyLow, energyHigh, temperature) {
+  return Math.exp(integrateLogPlanckWeight(energyLow, energyHigh, temperature));
 }
 
 export function integrateRosselandWeight(energyLow, energyHigh, temperature) {
-  assertFinitePositive(energyLow, 'Lower energy');
-  assertFinitePositive(energyHigh, 'Upper energy');
-  assertFinitePositive(temperature, 'Temperature');
-  if (!(energyHigh > energyLow)) return 0;
-  return gaussLegendre32(rosselandIntegrand, energyLow / temperature, energyHigh / temperature);
+  return Math.exp(integrateLogRosselandWeight(energyLow, energyHigh, temperature));
 }
 
 export function buildCollapsePlan(kind, nativeEdges, outputEdges, temperature) {
@@ -287,9 +311,9 @@ export function buildCollapsePlan(kind, nativeEdges, outputEdges, temperature) {
     throw new Error('Output energy range ends above the native table.');
   }
 
-  const integrate = kind === 'planck'
-    ? integratePlanckWeight
-    : integrateRosselandWeight;
+  const integrateLog = kind === 'planck'
+    ? integrateLogPlanckWeight
+    : integrateLogRosselandWeight;
   const bins = [];
   let nativeIndex = 0;
 
@@ -304,22 +328,32 @@ export function buildCollapsePlan(kind, nativeEdges, outputEdges, temperature) {
 
     const terms = [];
     let cursor = nativeIndex;
-    let weightSum = 0;
     while (cursor < nativeEdges.length - 1 && nativeEdges[cursor] < high) {
       const overlapLow = Math.max(low, nativeEdges[cursor]);
       const overlapHigh = Math.min(high, nativeEdges[cursor + 1]);
       if (overlapHigh > overlapLow) {
-        const weight = integrate(overlapLow, overlapHigh, temperature);
-        terms.push({ nativeIndex: cursor, weight, overlapLow, overlapHigh });
-        weightSum += weight;
+        const logWeight = integrateLog(overlapLow, overlapHigh, temperature);
+        terms.push({ nativeIndex: cursor, logWeight, overlapLow, overlapHigh });
       }
       if (nativeEdges[cursor + 1] >= high) break;
       cursor += 1;
     }
-    bins.push({ low, high, terms, weightSum });
+    bins.push({ low, high, terms });
   }
 
   return { kind, temperature, bins };
+}
+
+function scaledTerms(terms, effectiveLogWeight = (term) => term.logWeight) {
+  const finite = terms
+    .map((term) => ({ term, logWeight: effectiveLogWeight(term) }))
+    .filter(({ logWeight }) => Number.isFinite(logWeight));
+  if (finite.length === 0) return [];
+  const maximum = Math.max(...finite.map(({ logWeight }) => logWeight));
+  return finite.map(({ term, logWeight }) => ({
+    term,
+    weight: Math.exp(logWeight - maximum),
+  }));
 }
 
 export function applyCollapsePlan(
@@ -345,43 +379,51 @@ export function applyCollapsePlan(
       continue;
     }
 
-    if (!(bin.weightSum > 0) || !Number.isFinite(bin.weightSum)) {
-      results.push({ value: Number.NaN, status: 'weight_underflow' });
+    const weighted = scaledTerms(bin.terms);
+    if (weighted.length === 0) {
+      results.push({ value: Number.NaN, status: 'invalid_weight_integral' });
       continue;
     }
 
     if (plan.kind === 'planck') {
       let numerator = 0;
+      let denominator = 0;
       let invalid = false;
-      for (const term of bin.terms) {
+      for (const { term, weight } of weighted) {
         const opacity = nativeOpacity[term.nativeIndex];
         if (!Number.isFinite(opacity) || opacity < 0) {
           invalid = true;
           break;
         }
-        numerator += term.weight * opacity;
+        numerator += weight * opacity;
+        denominator += weight;
       }
-      results.push(invalid
-        ? { value: Number.NaN, status: 'invalid_native_opacity' }
-        : { value: numerator / bin.weightSum, status: 'ok' });
+      if (invalid || !(denominator > 0)) {
+        results.push({ value: Number.NaN, status: 'invalid_native_opacity' });
+      } else {
+        const value = numerator / denominator;
+        results.push({ value, status: value === 0 ? 'ok_zero' : 'ok' });
+      }
       continue;
     }
 
     if (plan.kind === 'rosseland_harmonic') {
+      let numerator = 0;
       let denominator = 0;
       let hasZero = false;
       let invalid = false;
-      for (const term of bin.terms) {
+      for (const { term, weight } of weighted) {
         const opacity = nativeOpacity[term.nativeIndex];
         if (!Number.isFinite(opacity) || opacity < 0) {
           invalid = true;
           break;
         }
-        if (opacity === 0 && term.weight > 0) {
+        if (opacity === 0) {
           hasZero = true;
           break;
         }
-        denominator += term.weight / opacity;
+        numerator += weight;
+        denominator += weight / opacity;
       }
       if (invalid) {
         results.push({ value: Number.NaN, status: 'invalid_native_opacity' });
@@ -390,16 +432,11 @@ export function applyCollapsePlan(
       } else if (!(denominator > 0) || !Number.isFinite(denominator)) {
         results.push({ value: Number.NaN, status: 'invalid_harmonic_denominator' });
       } else {
-        results.push({ value: bin.weightSum / denominator, status: 'ok' });
+        results.push({ value: numerator / denominator, status: 'ok' });
       }
       continue;
     }
 
-    // The published krosseland_absorption field is a Rosseland
-    // flux-weighted absorption opacity:
-    //   integral(W * kappa_a / chi) / integral(W / chi).
-    // During browser re-collapse, published native group means are treated
-    // as piecewise constant, with krosseland providing the chi proxy.
     if (!totalOpacity) {
       results.push({ value: Number.NaN, status: 'missing_total_rosseland_spectrum' });
       continue;
@@ -414,24 +451,31 @@ export function applyCollapsePlan(
       continue;
     }
 
+    const transportTerms = scaledTerms(bin.terms, (term) => {
+      const total = totalOpacity[term.nativeIndex];
+      return Number.isFinite(total) && total > 0
+        ? term.logWeight - Math.log(total)
+        : Number.NaN;
+    });
+    if (transportTerms.length !== bin.terms.length) {
+      results.push({ value: Number.NaN, status: 'invalid_total_rosseland_stencil' });
+      continue;
+    }
+
     let numerator = 0;
     let denominator = 0;
     let invalid = false;
-    for (const term of bin.terms) {
+    for (const { term, weight } of transportTerms) {
       const component = nativeOpacity[term.nativeIndex];
-      const total = totalOpacity[term.nativeIndex];
-      if (!Number.isFinite(component) || component < 0 || !Number.isFinite(total) || total <= 0) {
+      if (!Number.isFinite(component) || component < 0) {
         invalid = true;
         break;
       }
-      const transportWeight = term.weight / total;
-      numerator += transportWeight * component;
-      denominator += transportWeight;
+      numerator += weight * component;
+      denominator += weight;
     }
-    if (invalid) {
+    if (invalid || !(denominator > 0)) {
       results.push({ value: Number.NaN, status: 'invalid_rosseland_absorption_stencil' });
-    } else if (!(denominator > 0) || !Number.isFinite(denominator)) {
-      results.push({ value: Number.NaN, status: 'invalid_transport_denominator' });
     } else {
       const value = numerator / denominator;
       results.push({ value, status: value === 0 ? 'ok_zero' : 'ok' });
@@ -439,3 +483,4 @@ export function applyCollapsePlan(
   }
   return results;
 }
+
