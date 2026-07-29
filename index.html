@@ -48,8 +48,20 @@
   </header>
 
   <main>
-    <section id="home" class="hero">
-      <div class="hero-grid">
+    <section id="home" class="hero hero-cinematic">
+      <img
+        class="hero-cinematic-image"
+        src="assets/hero_tde_outflow.webp"
+        alt="Artist's conception of an eccentric tidal-disruption-event outflow with an extended debris stream and a luminous circularization region."
+        width="1920"
+        height="760"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      >
+      <div class="hero-cinematic-overlay" aria-hidden="true"></div>
+
+      <div class="hero-cinematic-shell">
         <div class="hero-copy reveal">
           <p class="eyebrow"><span></span> A public library of multigroup opacities</p>
           <h1>See how radiation<br><span>moves through the cosmos.</span></h1>
@@ -61,119 +73,39 @@
             </span>
           </p>
           <p class="hero-lede">
-            Explore physically consistent opacity tables for radiation
-            hydrodynamics—from stellar interiors and envelopes to supernovae,
-            tidal disruption events, accretion flows, radiative shocks, and
-            other astrophysical transients. The current public release provides
-            solar-composition tables across 1024 energy groups, 128
-            temperatures, and 128 densities.
+            Explore physically consistent opacity tables for stellar interiors,
+            supernovae, tidal disruption events, accretion flows, radiative
+            shocks, and other astrophysical transients.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#explore">
               Start exploring
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
             </a>
-            <a class="button button-ghost" href="#methods">Read the methods</a>
-          </div>
-          <div class="trust-row" aria-label="Dataset qualities">
-            <span><i class="status-dot"></i> Open data</span>
-            <span><i class="status-dot"></i> Low-density reach</span>
+            <a class="button button-ghost" href="#methods">Learn more</a>
           </div>
         </div>
 
-        <div class="stellar-visual reveal" aria-label="A tidal disruption event, supernova ejecta, and radiation propagating through space">
-          <div class="visual-grid"></div>
-          <svg class="transient-scene" viewBox="0 0 760 610" role="img" aria-labelledby="transient-title transient-desc">
-            <title id="transient-title">Radiation connecting a tidal disruption event and a supernova</title>
-            <desc id="transient-desc">A star is stretched into a luminous accretion stream around a black hole on the left. Radiation waves cross the scene toward expanding supernova ejecta on the right.</desc>
-            <defs>
-              <radialGradient id="sn-core-gradient" cx="48%" cy="45%" r="58%">
-                <stop offset="0" stop-color="#fffbd8"></stop>
-                <stop offset=".13" stop-color="#ffd15a"></stop>
-                <stop offset=".35" stop-color="#ff783f"></stop>
-                <stop offset=".68" stop-color="#c42f8f" stop-opacity=".78"></stop>
-                <stop offset="1" stop-color="#6b32ca" stop-opacity="0"></stop>
-              </radialGradient>
-              <radialGradient id="tde-disk-gradient" cx="50%" cy="50%" r="55%">
-                <stop offset="0" stop-color="#fff7c2"></stop>
-                <stop offset=".25" stop-color="#ffb53b"></stop>
-                <stop offset=".58" stop-color="#ff4f78"></stop>
-                <stop offset="1" stop-color="#6f3cff" stop-opacity=".08"></stop>
-              </radialGradient>
-              <linearGradient id="tidal-gradient" x1="0" x2="1">
-                <stop offset="0" stop-color="#d8edff"></stop>
-                <stop offset=".35" stop-color="#7e71ff"></stop>
-                <stop offset=".7" stop-color="#ff4f8a"></stop>
-                <stop offset="1" stop-color="#ffb33c"></stop>
-              </linearGradient>
-              <linearGradient id="radiation-gradient" x1="0" x2="1">
-                <stop offset="0" stop-color="#8a67ff"></stop>
-                <stop offset=".48" stop-color="#38c9f0"></stop>
-                <stop offset="1" stop-color="#fff29c"></stop>
-              </linearGradient>
-              <filter id="soft-glow" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur stdDeviation="8" result="blur"></feGaussianBlur>
-                <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
-              </filter>
-              <filter id="wide-glow" x="-100%" y="-100%" width="300%" height="300%">
-                <feGaussianBlur stdDeviation="20" result="blur"></feGaussianBlur>
-                <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
-              </filter>
-            </defs>
-
-            <g class="scene-stars" aria-hidden="true">
-              <circle cx="52" cy="72" r="2"></circle><circle cx="114" cy="252" r="1.4"></circle>
-              <circle cx="180" cy="86" r="1.2"></circle><circle cx="324" cy="115" r="1.8"></circle>
-              <circle cx="403" cy="72" r="1.2"></circle><circle cx="483" cy="480" r="1.7"></circle>
-              <circle cx="650" cy="72" r="1.5"></circle><circle cx="704" cy="390" r="1.2"></circle>
-              <circle cx="595" cy="535" r="1.4"></circle><circle cx="279" cy="518" r="1.1"></circle>
-            </g>
-
-            <g class="tde-system">
-              <path class="tidal-stream tidal-stream-halo" d="M72 126 C122 140 116 232 174 264 C220 289 294 265 333 326 C356 362 320 411 265 417"></path>
-              <path class="tidal-stream" d="M72 126 C122 140 116 232 174 264 C220 289 294 265 333 326 C356 362 320 411 265 417"></path>
-              <g class="disrupted-star" filter="url(#soft-glow)">
-                <circle cx="67" cy="121" r="13" fill="#fff3b5"></circle>
-                <path d="M67 91v17M67 134v17M37 121h17M80 121h18M46 100l12 12M77 130l12 12M46 142l12-12M77 112l12-12" stroke="#ffb43c" stroke-width="3" stroke-linecap="round"></path>
-              </g>
-              <ellipse class="tde-disk tde-disk-halo" cx="255" cy="382" rx="148" ry="53" transform="rotate(-13 255 382)"></ellipse>
-              <ellipse class="tde-disk" cx="255" cy="382" rx="140" ry="43" transform="rotate(-13 255 382)"></ellipse>
-              <ellipse class="tde-disk-inner" cx="255" cy="382" rx="88" ry="20" transform="rotate(-13 255 382)"></ellipse>
-              <circle class="event-horizon" cx="255" cy="382" r="35"></circle>
-              <circle class="photon-ring" cx="255" cy="382" r="43"></circle>
-              <path class="tde-jet" d="M252 348 L225 82 L269 347 Z"></path>
-              <path class="tde-jet tde-jet-counter" d="M259 417 L294 571 L246 419 Z"></path>
-            </g>
-
-            <g class="radiation-field" aria-hidden="true">
-              <path class="radiation-ray radiation-ray-a" d="M333 309 C398 278 432 250 493 236"></path>
-              <path class="radiation-ray radiation-ray-b" d="M342 333 C403 319 446 303 505 286"></path>
-              <path class="radiation-ray radiation-ray-c" d="M337 356 C403 365 453 354 514 334"></path>
-              <path class="radiation-ray radiation-ray-d" d="M326 380 C394 411 453 403 519 376"></path>
-            </g>
-
-            <g class="supernova-system" filter="url(#soft-glow)">
-              <circle class="sn-haze" cx="584" cy="269" r="158"></circle>
-              <circle class="sn-shell sn-shell-outer" cx="584" cy="269" r="139"></circle>
-              <circle class="sn-shell sn-shell-middle" cx="584" cy="269" r="106"></circle>
-              <circle class="sn-shell sn-shell-inner" cx="584" cy="269" r="70"></circle>
-              <circle class="sn-core" cx="584" cy="269" r="55"></circle>
-              <g class="ejecta-filaments">
-                <path d="M584 214 C568 164 548 143 518 121"></path>
-                <path d="M622 228 C669 191 693 170 712 134"></path>
-                <path d="M637 273 C695 272 719 285 739 302"></path>
-                <path d="M617 308 C658 351 673 383 674 421"></path>
-                <path d="M581 324 C568 379 546 414 519 439"></path>
-                <path d="M544 300 C492 330 469 356 450 392"></path>
-                <path d="M532 262 C483 245 459 225 437 198"></path>
-              </g>
-            </g>
-          </svg>
-          <div class="spectrum-card spectrum-card-a">
-            <span>Energy coverage</span>
-            <strong>0.01 eV — 2 MeV</strong>
-          </div>
-        </div>
+        <aside class="hero-method-card reveal" aria-label="How the opacities were calculated">
+          <h2>How the opacities were calculated</h2>
+          <p>
+            The underlying monochromatic LTE opacities were calculated with
+            <strong>STAR (STA-Revised)</strong>, based on the
+            Super-Transition-Array method. GLOW integrates those spectra into
+            1024 energy groups and constructs the published Planck- and
+            Rosseland-weighted quantities.
+          </p>
+          <a
+            href="https://iopscience.iop.org/article/10.3847/0004-637X/821/1/45"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Read the paper
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 4h6v6M20 4l-9 9M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"></path>
+            </svg>
+          </a>
+        </aside>
       </div>
     </section>
 
@@ -185,13 +117,98 @@
       <article><span class="metric-icon">↓</span><div><strong>TXT + CSV</strong><small>Portable output</small></div></article>
     </section>
 
-    <section class="use-case-ribbon reveal" aria-label="Astrophysical applications">
-      <span class="use-case-lead">Designed for</span>
-      <span class="use-case-pill"><i class="use-case-dot violet"></i>Stellar interiors</span>
-      <span class="use-case-pill"><i class="use-case-dot coral"></i>Supernovae</span>
-      <span class="use-case-pill"><i class="use-case-dot orange"></i>Tidal disruption events</span>
-      <span class="use-case-pill"><i class="use-case-dot cyan"></i>Accretion flows</span>
-      <span class="use-case-pill"><i class="use-case-dot gold"></i>Radiative shocks</span>
+    <section class="discovery-section reveal" aria-labelledby="discovery-title">
+      <h2 id="discovery-title">Built for Astrophysical Discovery</h2>
+
+      <div class="discovery-grid">
+        <article class="discovery-card">
+          <img
+            src="assets/scenario_stellar_interiors.webp"
+            alt="Artist's conception of a stellar interior."
+            width="720"
+            height="405"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="discovery-copy">
+            <h3>Stellar Interiors</h3>
+            <p>From photospheres to convective cores.</p>
+          </div>
+        </article>
+
+        <article class="discovery-card">
+          <img
+            src="assets/scenario_supernova.webp"
+            alt="Artist's conception of expanding supernova ejecta."
+            width="720"
+            height="405"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="discovery-copy">
+            <h3>Supernovae</h3>
+            <p>Model radiation transport in exploding stars.</p>
+          </div>
+        </article>
+
+        <article class="discovery-card">
+          <img
+            src="assets/scenario_tde.webp"
+            alt="Artist's conception of an eccentric tidal disruption event."
+            width="720"
+            height="405"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="discovery-copy">
+            <h3>Tidal Disruption Events</h3>
+            <p>Capture extreme accretion and eccentric outflows.</p>
+          </div>
+        </article>
+
+        <article class="discovery-card">
+          <img
+            src="assets/scenario_accretion.webp"
+            alt="Artist's conception of a compact-object accretion flow."
+            width="720"
+            height="405"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="discovery-copy">
+            <h3>Accretion Flows</h3>
+            <p>For black holes, neutron stars, and disks.</p>
+          </div>
+        </article>
+
+        <article class="discovery-card">
+          <img
+            class="discovery-image-contain"
+            src="assets/scenario_radiative_shock.webp"
+            alt="Artist's conception of a luminous radiative shock."
+            width="720"
+            height="405"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="discovery-copy">
+            <h3>Radiative Shocks</h3>
+            <p>Accurate opacities across a wide parameter space.</p>
+          </div>
+        </article>
+
+        <article class="discovery-card discovery-open-card">
+          <div class="discovery-open-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 11V7a4 4 0 0 1 7.6-1.8M6 11h12v10H6zM12 15v2"></path>
+            </svg>
+          </div>
+          <div class="discovery-copy">
+            <h3>Open &amp; Reproducible</h3>
+            <p>Transparent, validated, and designed for the community.</p>
+          </div>
+        </article>
+      </div>
     </section>
 
     <section id="explore" class="section-shell workspace-section">
@@ -364,6 +381,17 @@
               </div>
             </div>
 
+            <div class="output-unit-panel form-grid two-columns">
+              <label>
+                Temperature output units
+                <select id="temperature-output-unit-select">
+                  <option value="eV">Electronvolts (eV)</option>
+                  <option value="K">Kelvin (K)</option>
+                </select>
+              </label>
+              <p class="help">Interpolation remains on the published eV grid; this changes only preview and TXT output units.</p>
+            </div>
+
             <div class="summary-panel">
               <p class="panel-kicker">Current selection</p>
               <dl>
@@ -399,8 +427,8 @@
             <span class="live-badge purple"><i></i> Interactive</span>
           </div>
           <p class="panel-description">
-            Sweep the complete published temperature or density axis at a fixed
-            state coordinate. Plot one native group or a full-range weighted mean.
+            Sweep temperature, density, or the complete 1024-group photon-energy
+            spectrum. Temperature results and axes may be displayed in eV or kelvin.
           </p>
 
           <form id="plot-form" hidden>
@@ -414,6 +442,14 @@
                 <select id="plot-sweep-select">
                   <option value="temperature">Temperature, fixed density</option>
                   <option value="density">Density, fixed temperature</option>
+                  <option value="frequency">Photon energy / frequency, fixed T and density</option>
+                </select>
+              </label>
+              <label>
+                Temperature units
+                <select id="plot-temperature-unit-select">
+                  <option value="eV">Electronvolts (eV)</option>
+                  <option value="K">Kelvin (K)</option>
                 </select>
               </label>
             </div>
@@ -458,16 +494,30 @@
                 </select>
               </label>
               <label id="plot-temperature-native-label">
-                Fixed temperature [eV]
+                <span id="plot-temperature-native-label-text">Fixed temperature [eV]</span>
                 <select id="plot-temperature-select"></select>
               </label>
               <label id="plot-temperature-custom-label" hidden>
-                Fixed temperature [eV]
+                <span id="plot-temperature-custom-label-text">Fixed temperature [eV]</span>
                 <input id="plot-temperature-custom" type="number" min="0" step="any">
               </label>
             </div>
 
-            <div class="query-section compact-section energy-treatment">
+            <div id="plot-spectral-axis-panel" class="mode-panel form-grid two-columns" hidden>
+              <label>
+                Spectral x-axis
+                <select id="plot-spectral-unit-select">
+                  <option value="eV">Photon energy hν [eV]</option>
+                  <option value="Hz">Frequency ν [Hz]</option>
+                </select>
+              </label>
+              <div class="plot-group-range">
+                <span>Spectral resolution</span>
+                <strong>1024 native groups</strong>
+              </div>
+            </div>
+
+            <div id="plot-energy-treatment" class="query-section compact-section energy-treatment">
               <div class="query-content">
                 <h4>Energy treatment</h4>
                 <div class="mode-row" role="radiogroup" aria-label="Plot energy treatment">
@@ -499,7 +549,7 @@
               <dl>
                 <div><dt>Curve points</dt><dd id="plot-point-summary">—</dd></div>
                 <div><dt>Transfer</dt><dd id="plot-transfer-summary">—</dd></div>
-                <div><dt>Energy</dt><dd id="plot-energy-summary">—</dd></div>
+                <div><dt id="plot-energy-summary-label">Energy</dt><dd id="plot-energy-summary">—</dd></div>
               </dl>
             </div>
 
@@ -557,7 +607,7 @@
           <table>
             <thead>
               <tr>
-                <th>Temperature [eV]</th>
+                <th id="preview-temperature-heading">Temperature [eV]</th>
                 <th>Density [g cm<sup>-3</sup>]</th>
                 <th>Output group</th>
                 <th>Energy low [eV]</th>

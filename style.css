@@ -908,3 +908,776 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
     padding: 0.8rem 0.85rem;
   }
 }
+
+
+/* Spectral line plots and temperature output units. */
+.output-unit-panel {
+  align-items: end;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface-soft) 80%, transparent);
+}
+
+.output-unit-panel .help {
+  margin: 0;
+  align-self: center;
+}
+
+#plot-spectral-axis-panel {
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 720px) {
+  .output-unit-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* GLOW full-width TDE hero and discovery cards v2 */
+.hero.hero-cinematic {
+  position: relative;
+  min-height: 620px;
+  display: grid;
+  align-items: stretch;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: #02060e;
+}
+
+.hero-cinematic-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: 56% 50%;
+}
+
+.hero-cinematic-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 6, 14, .98) 0%,
+      rgba(2, 6, 14, .90) 22%,
+      rgba(2, 6, 14, .48) 45%,
+      rgba(2, 6, 14, .08) 69%,
+      rgba(2, 6, 14, .18) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(2, 6, 14, .18) 0%,
+      transparent 56%,
+      rgba(2, 6, 14, .88) 100%
+    );
+}
+
+.hero-cinematic-shell {
+  position: relative;
+  z-index: 2;
+  width: min(var(--max-width), calc(100% - 2rem));
+  min-height: 620px;
+  margin: 0 auto;
+  padding: 3.1rem 0 5.3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(285px, 340px);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 7rem);
+}
+
+.hero-cinematic .hero-copy {
+  max-width: 590px;
+}
+
+.hero-cinematic h1 {
+  max-width: 650px;
+  font-size: clamp(3.35rem, 5.2vw, 5.7rem);
+}
+
+.hero-cinematic .hero-identity {
+  max-width: 520px;
+}
+
+.hero-cinematic .hero-lede {
+  max-width: 515px;
+  font-size: clamp(.96rem, 1.2vw, 1.08rem);
+}
+
+.hero-method-card {
+  align-self: center;
+  padding: 1.2rem 1.25rem;
+  border: 1px solid rgba(164, 186, 219, .24);
+  border-radius: 15px;
+  background: rgba(5, 12, 23, .84);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(17px) saturate(125%);
+}
+
+.hero-method-card h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.02rem;
+  line-height: 1.3;
+}
+
+.hero-method-card p {
+  margin: 0;
+  color: #b7c2d4;
+  font-size: .75rem;
+  line-height: 1.62;
+}
+
+.hero-method-card a {
+  width: fit-content;
+  margin-top: .9rem;
+  padding: .58rem .78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .48rem;
+  border: 1px solid rgba(171, 111, 255, .48);
+  border-radius: 9px;
+  background: rgba(128, 88, 255, .08);
+  color: #d7b9ff;
+  font-size: .73rem;
+  font-weight: 720;
+  text-decoration: none;
+}
+
+.hero-method-card a:hover {
+  border-color: rgba(255, 135, 79, .72);
+  background: rgba(255, 90, 98, .09);
+}
+
+.hero-method-card svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.discovery-section {
+  width: min(var(--max-width), calc(100% - 2rem));
+  margin: 1.15rem auto 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-strong) 91%, transparent);
+  box-shadow: var(--shadow-small);
+}
+
+.discovery-section > h2 {
+  margin: 0 0 .9rem;
+  text-align: center;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  letter-spacing: -.02em;
+}
+
+.discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: .72rem;
+}
+
+.discovery-card {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: rgba(6, 13, 24, .76);
+  box-shadow: 0 9px 26px rgba(0, 0, 0, .16);
+}
+
+.discovery-card-featured {
+  border-color: rgba(195, 66, 239, .75);
+  box-shadow: 0 0 0 1px rgba(195, 66, 239, .08), 0 12px 32px rgba(99, 41, 174, .16);
+}
+
+.discovery-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+}
+
+.discovery-copy {
+  padding: .8rem .78rem .9rem;
+}
+
+.discovery-copy h3 {
+  margin: 0;
+  font-size: .93rem;
+  line-height: 1.25;
+}
+
+.discovery-copy p {
+  margin: .35rem 0 0;
+  color: var(--muted);
+  font-size: .73rem;
+  line-height: 1.5;
+}
+
+.discovery-copy small {
+  display: block;
+  margin-top: .55rem;
+  color: #c282ff;
+  font-size: .6rem;
+  line-height: 1.35;
+}
+
+.discovery-open-card {
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.discovery-open-icon {
+  width: 54px;
+  height: 54px;
+  margin-top: 1.2rem;
+  display: grid;
+  place-items: center;
+  color: #b66cff;
+}
+
+.discovery-open-icon svg {
+  width: 42px;
+  height: 42px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-theme="light"] .hero-cinematic {
+  color-scheme: dark;
+  color: #f7f9fd;
+}
+
+html[data-theme="light"] .hero-cinematic .hero-identity strong {
+  color: #f7f9fd;
+}
+
+html[data-theme="light"] .hero-cinematic .hero-identity span,
+html[data-theme="light"] .hero-cinematic .hero-lede {
+  color: #b9c4d6;
+}
+
+@media (max-width: 1180px) {
+  .discovery-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .hero.hero-cinematic {
+    min-height: auto;
+  }
+
+  .hero-cinematic-image {
+    object-position: 63% 50%;
+  }
+
+  .hero-cinematic-overlay {
+    background:
+      linear-gradient(180deg, rgba(2, 6, 14, .78), rgba(2, 6, 14, .45) 52%, rgba(2, 6, 14, .92)),
+      linear-gradient(90deg, rgba(2, 6, 14, .84), rgba(2, 6, 14, .18));
+  }
+
+  .hero-cinematic-shell {
+    min-height: 760px;
+    padding: 3.4rem 0 4.5rem;
+    grid-template-columns: 1fr;
+    align-content: space-between;
+    gap: 2rem;
+  }
+
+  .hero-method-card {
+    max-width: 420px;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero-cinematic-shell {
+    width: calc(100% - 1.2rem);
+    min-height: 770px;
+  }
+
+  .hero-cinematic h1 {
+    font-size: clamp(3rem, 15vw, 4.4rem);
+  }
+
+  .hero-method-card {
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .hero-method-card p {
+    font-size: .7rem;
+  }
+
+  .discovery-section {
+    width: calc(100% - 1.2rem);
+    padding: .75rem;
+  }
+
+  .discovery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .discovery-card {
+    display: grid;
+    grid-template-columns: 42% minmax(0, 1fr);
+  }
+
+  .discovery-card img {
+    height: 100%;
+    min-height: 135px;
+    aspect-ratio: auto;
+  }
+
+  .discovery-open-card {
+    display: flex;
+    min-height: 180px;
+  }
+
+  .discovery-open-icon {
+    margin-top: 0;
+  }
+}
+/* End GLOW full-width TDE hero and discovery cards v2 */
+
+/* GLOW scale and composition correction v3 */
+.hero.hero-cinematic {
+  min-height: 555px;
+}
+
+.hero-cinematic-shell {
+  width: min(1480px, calc(100% - 3rem));
+  min-height: 555px;
+  padding: 2.2rem 0 4rem;
+  grid-template-columns: minmax(0, 720px) minmax(285px, 320px);
+  gap: clamp(2rem, 7vw, 8rem);
+}
+
+.hero-cinematic .hero-copy {
+  max-width: 720px;
+}
+
+.hero-cinematic h1 {
+  max-width: 720px;
+  font-size: clamp(3.15rem, 4.25vw, 4.35rem);
+  line-height: 1.01;
+  letter-spacing: -.046em;
+}
+
+.hero-cinematic .hero-identity {
+  max-width: 520px;
+  margin: 1rem 0 .75rem;
+  padding: .7rem .85rem;
+}
+
+.hero-cinematic .hero-identity strong {
+  font-size: .94rem;
+}
+
+.hero-cinematic .hero-identity span {
+  font-size: .8rem;
+}
+
+.hero-cinematic .hero-lede {
+  max-width: 520px;
+  margin-top: 1rem;
+  font-size: clamp(.91rem, 1vw, 1rem);
+  line-height: 1.55;
+}
+
+.hero-cinematic .hero-actions {
+  margin-top: 1.35rem;
+}
+
+.hero-cinematic-image {
+  object-position: center center;
+  transform: none;
+}
+
+.hero-method-card {
+  width: 310px;
+  padding: 1rem 1.05rem;
+}
+
+.hero-method-card h2 {
+  font-size: .95rem;
+}
+
+.hero-method-card p {
+  font-size: .7rem;
+  line-height: 1.55;
+}
+
+.metric-strip {
+  width: min(1480px, calc(100% - 3rem));
+  margin-top: -32px;
+}
+
+.metric-strip article {
+  padding: .95rem 1.05rem;
+}
+
+.metric-icon {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+}
+
+.discovery-section {
+  width: min(1480px, calc(100% - 3rem));
+  margin-top: .8rem;
+  padding: .78rem;
+}
+
+.discovery-section > h2 {
+  margin-bottom: .7rem;
+  font-size: 1.18rem;
+}
+
+.discovery-grid {
+  gap: .55rem;
+}
+
+.discovery-card img {
+  object-fit: contain;
+  background: #030711;
+}
+
+.discovery-copy {
+  padding: .62rem .64rem .72rem;
+}
+
+.discovery-copy h3 {
+  font-size: .82rem;
+}
+
+.discovery-copy p {
+  margin-top: .28rem;
+  font-size: .65rem;
+  line-height: 1.42;
+}
+
+.discovery-copy small {
+  margin-top: .42rem;
+  font-size: .54rem;
+}
+
+.discovery-open-icon {
+  width: 46px;
+  height: 46px;
+  margin-top: .85rem;
+}
+
+.discovery-open-icon svg {
+  width: 35px;
+  height: 35px;
+}
+
+@media (max-width: 1180px) {
+  .hero-cinematic-shell {
+    width: min(100% - 2rem, 1120px);
+    grid-template-columns: minmax(0, 1fr) minmax(265px, 300px);
+    gap: 2rem;
+  }
+
+  .hero-cinematic h1 {
+    font-size: clamp(3rem, 5.4vw, 4rem);
+  }
+}
+
+@media (max-width: 860px) {
+  .hero-cinematic-shell {
+    width: calc(100% - 1.5rem);
+    min-height: 700px;
+    padding: 2.8rem 0 3.8rem;
+  }
+
+  .hero-cinematic h1 {
+    max-width: 650px;
+    font-size: clamp(2.9rem, 9vw, 4rem);
+  }
+
+  .hero-method-card {
+    width: min(390px, 100%);
+  }
+
+  .metric-strip,
+  .discovery-section {
+    width: calc(100% - 1.5rem);
+  }
+}
+
+@media (max-width: 680px) {
+  .hero-cinematic-shell {
+    min-height: 700px;
+  }
+
+  .hero-cinematic h1 {
+    font-size: clamp(2.65rem, 13vw, 3.75rem);
+  }
+
+  .metric-strip,
+  .discovery-section {
+    width: calc(100% - 1rem);
+  }
+}
+/* End GLOW scale and composition correction v3 */
+
+/* GLOW image-fit correction v4 */
+
+/*
+ * Show the complete TDE artwork instead of cropping it to the viewport.
+ * The image occupies the right 75% of the hero and is contained rather
+ * than covered. The unused pixels blend into the dark hero background.
+ */
+.hero.hero-cinematic {
+  min-height: 555px;
+  background:
+    radial-gradient(circle at 62% 48%, rgba(131, 61, 160, .12), transparent 28rem),
+    #02060e;
+}
+
+.hero-cinematic-image {
+  left: 25%;
+  right: 0;
+  width: 75%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right center;
+  background: transparent;
+}
+
+.hero-cinematic-overlay {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 6, 14, 1) 0%,
+      rgba(2, 6, 14, .96) 18%,
+      rgba(2, 6, 14, .80) 31%,
+      rgba(2, 6, 14, .38) 45%,
+      rgba(2, 6, 14, .08) 62%,
+      rgba(2, 6, 14, .02) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(2, 6, 14, .10) 0%,
+      transparent 66%,
+      rgba(2, 6, 14, .72) 100%
+    );
+}
+
+.hero-cinematic-shell {
+  min-height: 555px;
+}
+
+/*
+ * Keep every discovery image at the top of a compact, equal-height card.
+ * These !important declarations intentionally override the earlier mobile
+ * and generic card rules that caused the large black gaps.
+ */
+.discovery-grid {
+  align-items: stretch;
+  grid-auto-rows: 270px;
+}
+
+.discovery-card {
+  height: 270px;
+  min-height: 0;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.discovery-card > img {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 122px !important;
+  min-height: 122px !important;
+  max-height: 122px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block;
+  flex: 0 0 122px !important;
+  aspect-ratio: auto !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+.discovery-copy {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.discovery-open-card {
+  height: 270px;
+  min-height: 270px;
+}
+
+@media (max-width: 1180px) {
+  .discovery-grid {
+    grid-auto-rows: 292px;
+  }
+
+  .discovery-card,
+  .discovery-open-card {
+    height: 292px;
+    min-height: 292px;
+  }
+
+  .discovery-card > img {
+    height: 156px !important;
+    min-height: 156px !important;
+    max-height: 156px !important;
+    flex-basis: 156px !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .hero.hero-cinematic,
+  .hero-cinematic-shell {
+    min-height: 720px;
+  }
+
+  .hero-cinematic-image {
+    left: 0;
+    width: 100%;
+    height: 56%;
+    top: 44%;
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .hero-cinematic-overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(2, 6, 14, .98) 0%,
+        rgba(2, 6, 14, .88) 47%,
+        rgba(2, 6, 14, .34) 68%,
+        rgba(2, 6, 14, .62) 100%
+      );
+  }
+}
+
+@media (max-width: 680px) {
+  .discovery-grid {
+    grid-auto-rows: 150px;
+  }
+
+  .discovery-card {
+    height: 150px;
+    min-height: 150px;
+    display: grid !important;
+    grid-template-columns: 42% minmax(0, 1fr) !important;
+    grid-template-rows: 150px !important;
+  }
+
+  .discovery-card > img {
+    width: 100% !important;
+    height: 150px !important;
+    min-height: 150px !important;
+    max-height: 150px !important;
+    flex-basis: auto !important;
+    object-fit: cover !important;
+  }
+
+  .discovery-copy {
+    padding: .82rem;
+    overflow: visible;
+  }
+
+  .discovery-open-card {
+    height: 150px;
+    min-height: 150px;
+    display: flex !important;
+  }
+}
+
+/* End GLOW image-fit correction v4 */
+
+/* GLOW discovery cleanup v5 */
+
+/* All science-use cards use the same neutral border. */
+.discovery-card-featured {
+  border-color: var(--border) !important;
+  box-shadow: 0 9px 26px rgba(0, 0, 0, .16) !important;
+}
+
+/* Show the full radiative-shock artwork instead of cropping it. */
+.discovery-card img.discovery-image-contain {
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #030711;
+}
+
+/* End GLOW discovery cleanup v5 */
+
+/* GLOW final visual tuning v6 */
+
+/* Move the complete TDE artwork left while keeping its current scale. */
+.hero-cinematic-image {
+  left: 8% !important;
+  right: 0 !important;
+  width: 92% !important;
+  object-position: center center !important;
+}
+
+/* Remove every remaining visual highlight from the TDE discovery card. */
+.discovery-card-featured,
+.discovery-card-featured:hover,
+.discovery-card:has(img[src*="scenario_tde"]) {
+  border-color: var(--border) !important;
+  border-top-color: var(--border) !important;
+  outline: 0 !important;
+  box-shadow: 0 9px 26px rgba(0, 0, 0, .16) !important;
+  background-image: none !important;
+}
+
+.discovery-card-featured::before,
+.discovery-card-featured::after,
+.discovery-card:has(img[src*="scenario_tde"])::before,
+.discovery-card:has(img[src*="scenario_tde"])::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* The replacement asset already contains padding; show it without recropping. */
+.discovery-card img[src*="scenario_radiative_shock"] {
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #03070f !important;
+}
+
+@media (max-width: 860px) {
+  .hero-cinematic-image {
+    left: 0 !important;
+    width: 100% !important;
+    object-position: 44% center !important;
+  }
+}
+
+/* End GLOW final visual tuning v6 */
