@@ -10,11 +10,22 @@ import {
   requiredFieldsForCollapse,
 } from './opacity_math.mjs';
 import { isDrawablePoint, preparePlotDomain } from './plot_math.mjs';
+import {
+  temperatureFromEV,
+  temperatureToEV,
+  spectralCoordinateFromEV,
+  temperatureUnitLabel,
+  spectralUnitLabel,
+} from './unit_math.mjs';
 
 const DATA_ROOT = 'solar_final/web_data';
 const MANIFEST_URL = `${DATA_ROOT}/manifest.json`;
 const AXES_URL = `${DATA_ROOT}/axes.json`;
 const PLOT_MANIFEST_URL = `${DATA_ROOT}/plot/manifest.json`;
+
+// GLOW spectrum plot repair v9
+const GLOW_KELVIN_PER_EV = 11604.518121550082;
+const GLOW_HZ_PER_EV = 2.417989242084918e14;
 
 const PREVIEW_ROW_LIMIT = 300;
 const MAX_OUTPUT_ROWS = 2_000_000;
@@ -31,6 +42,7 @@ const state = {
   plotManifest: null,
   plotCache: new Map(),
   lastPlot: null,
+  plotTemperatureUnit: 'eV',
 };
 
 const elements = {
@@ -68,9 +80,13 @@ const elements = {
   previewDescription: document.querySelector('#preview-description'),
   previewLimit: document.querySelector('#preview-limit'),
   previewBody: document.querySelector('#preview-body'),
+  previewTemperatureHeading: document.querySelector('#preview-temperature-heading'),
+  temperatureOutputUnitSelect: document.querySelector('#temperature-output-unit-select'),
   plotForm: document.querySelector('#plot-form'),
   plotFieldSelect: document.querySelector('#plot-field-select'),
   plotSweepSelect: document.querySelector('#plot-sweep-select'),
+  plotTemperatureUnitSelect: document.querySelector('#plot-temperature-unit-select'),
+  plotSpectralUnitSelect: document.querySelector('#plot-spectral-unit-select'),
   plotLogX: document.querySelector('#plot-log-x'),
   plotLogY: document.querySelector('#plot-log-y'),
   plotDensityMode: document.querySelector('#plot-density-mode'),
@@ -85,6 +101,10 @@ const elements = {
   plotDensityCustomLabel: document.querySelector('#plot-density-custom-label'),
   plotTemperatureNativeLabel: document.querySelector('#plot-temperature-native-label'),
   plotTemperatureCustomLabel: document.querySelector('#plot-temperature-custom-label'),
+  plotTemperatureNativeLabelText: document.querySelector('#plot-temperature-native-label-text'),
+  plotTemperatureCustomLabelText: document.querySelector('#plot-temperature-custom-label-text'),
+  plotSpectralAxisPanel: document.querySelector('#plot-spectral-axis-panel'),
+  plotEnergyTreatment: document.querySelector('#plot-energy-treatment'),
   plotGroupPanel: document.querySelector('#plot-group-panel'),
   plotIntegratedHelp: document.querySelector('#plot-integrated-help'),
   plotGroupInput: document.querySelector('#plot-group-input'),
@@ -92,6 +112,7 @@ const elements = {
   plotPointSummary: document.querySelector('#plot-point-summary'),
   plotTransferSummary: document.querySelector('#plot-transfer-summary'),
   plotEnergySummary: document.querySelector('#plot-energy-summary'),
+  plotEnergySummaryLabel: document.querySelector('#plot-energy-summary-label'),
   plotFormError: document.querySelector('#plot-form-error'),
   plotButton: document.querySelector('#plot-button'),
   plotDownloadButton: document.querySelector('#plot-download-button'),
@@ -116,6 +137,48 @@ function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KiB`;
   return `${(bytes / 1024 ** 2).toFixed(2)} MiB`;
+}
+
+function glowPlotTemperatureUnit() {
+  return elements.plotTemperatureUnitSelect.value === 'K' ? 'K' : 'eV';
+}
+
+function glowTemperatureFromEv(valueEv, unit) {
+  return unit === 'K' ? valueEv * GLOW_KELVIN_PER_EV : valueEv;
+}
+
+function glowTemperatureToEv(value, unit) {
+  return unit === 'K' ? value / GLOW_KELVIN_PER_EV : value;
+}
+
+function glowFormatPlotTemperature(valueEv, unit, digits = 6) {
+  return `${formatScientific(glowTemperatureFromEv(valueEv, unit), digits)} ${unit}`;
+}
+
+function glowRefreshPlotTemperatureControls() {
+  if (!state.axes) return;
+  const unit = glowPlotTemperatureUnit();
+  elements.plotTemperatureNativeLabelText.textContent = `Fixed temperature [${unit}]`;
+  elements.plotTemperatureCustomLabelText.textContent = `Fixed temperature [${unit}]`;
+  state.axes.temp_eV.forEach((temperatureEv, index) => {
+    const option = elements.plotTemperatureSelect.options[index];
+    if (option) {
+      option.textContent = `${index}: ${formatScientific(glowTemperatureFromEv(temperatureEv, unit), 5)} ${unit}`;
+    }
+  });
+}
+
+function glowHandlePlotTemperatureUnitChange() {
+  const previousUnit = state.plotTemperatureUnit;
+  const nextUnit = glowPlotTemperatureUnit();
+  const displayed = Number(elements.plotTemperatureCustom.value);
+  if (Number.isFinite(displayed) && displayed > 0 && previousUnit !== nextUnit) {
+    const valueEv = glowTemperatureToEv(displayed, previousUnit);
+    elements.plotTemperatureCustom.value = String(glowTemperatureFromEv(valueEv, nextUnit));
+  }
+  state.plotTemperatureUnit = nextUnit;
+  glowRefreshPlotTemperatureControls();
+  updatePlotPanels();
 }
 
 function showError(message) {
@@ -407,6 +470,7 @@ function getQuery() {
 
   return {
     field,
+    temperatureOutputUnit: elements.temperatureOutputUnitSelect.value,
     temperatures,
     densities,
     temperatureBrackets,
@@ -577,7 +641,7 @@ function renderPreview(rows, query, warningCount) {
   for (const row of rows) {
     const tr = document.createElement('tr');
     const values = [
-      formatScientific(row.temperature),
+      formatScientific(temperatureFromEV(row.temperature, query.temperatureOutputUnit)),
       formatScientific(row.density),
       String(row.outputGroup),
       formatScientific(row.energyLow),
@@ -594,6 +658,7 @@ function renderPreview(rows, query, warningCount) {
   }
   elements.previewBody.append(fragment);
   const label = state.manifest.field_metadata[query.field].label;
+  elements.previewTemperatureHeading.textContent = `Temperature [${temperatureUnitLabel(query.temperatureOutputUnit)}]`;
   elements.previewDescription.textContent = (
     `${label}: ${query.rowCount.toLocaleString()} values; ` +
     `${warningCount.toLocaleString()} warnings in the displayed rows.`
@@ -649,13 +714,14 @@ function createTextHeader(query, warningCount) {
     '# partial_native_group_overlap: log-weight integral evaluated only over overlap',
     '# extrapolation: disabled',
     '# nonpositive_interpolation_policy: all-zero T-rho stencil returns zero; mixed zero/positive T-rho stencil returns nan',
+    `# temperature_output_unit: ${temperatureUnitLabel(query.temperatureOutputUnit)}`,
     `# temperature_count: ${query.temperatures.length}`,
     `# density_count: ${query.densities.length}`,
     `# output_group_count: ${query.energy.outputBinCount}`,
     `# warning_count: ${warningCount}`,
     '#',
     '# Columns:',
-    '# temperature_eV density_g_cm-3 output_group_index energy_low_eV energy_high_eV opacity_cm2_g-1 status',
+    `# temperature_${query.temperatureOutputUnit === 'K' ? 'K' : 'eV'} density_g_cm-3 output_group_index energy_low_eV energy_high_eV opacity_cm2_g-1 status`,
     '',
   ].join('\n');
 }
@@ -672,7 +738,7 @@ async function downloadSelection() {
 
     const result = forEachResult(query, loadedChunks, (row) => {
       lines.push([
-        row.temperature.toExponential(16),
+        temperatureFromEV(row.temperature, query.temperatureOutputUnit).toExponential(16),
         row.density.toExponential(16),
         row.outputGroup,
         row.energyLow.toExponential(16),
@@ -695,7 +761,7 @@ async function downloadSelection() {
     anchor.href = url;
     anchor.download = (
       `GLOW_${query.field}_T${query.temperatures.length}_rho${query.densities.length}_` +
-      `${query.energy.outputBinCount}groups.txt`
+      `${query.energy.outputBinCount}groups_T${query.temperatureOutputUnit}.txt`
     );
     document.body.append(anchor);
     anchor.click();
@@ -736,24 +802,61 @@ function plotFixedTemperature() {
   if (elements.plotTemperatureMode.value === 'native') {
     return state.axes.temp_eV[Number.parseInt(elements.plotTemperatureSelect.value, 10)];
   }
-  const value = Number(elements.plotTemperatureCustom.value);
-  findLogBracket(state.axes.temp_eV, value, 'Temperature');
-  return value;
+  const displayedValue = Number(elements.plotTemperatureCustom.value);
+  const valueEv = glowTemperatureToEv(displayedValue, glowPlotTemperatureUnit());
+  findLogBracket(state.axes.temp_eV, valueEv, 'Temperature');
+  return valueEv;
+}
+
+function refreshPlotTemperatureLabels() {
+  if (!state.axes) return;
+  const unit = elements.plotTemperatureUnitSelect.value;
+  const label = temperatureUnitLabel(unit);
+  elements.plotTemperatureNativeLabelText.textContent = `Fixed temperature [${label}]`;
+  elements.plotTemperatureCustomLabelText.textContent = `Fixed temperature [${label}]`;
+  Array.from(elements.plotTemperatureSelect.options).forEach((option, index) => {
+    const display = temperatureFromEV(state.axes.temp_eV[index], unit);
+    option.textContent = `${index}: ${formatScientific(display, 5)} ${label}`;
+  });
+}
+
+function updatePlotTemperatureUnit() {
+  const previous = elements.plotTemperatureUnitSelect.dataset.previousUnit || 'eV';
+  const next = elements.plotTemperatureUnitSelect.value;
+  const current = Number(elements.plotTemperatureCustom.value);
+  if (Number.isFinite(current) && current > 0 && previous !== next) {
+    const valueEV = temperatureToEV(current, previous);
+    elements.plotTemperatureCustom.value = String(temperatureFromEV(valueEV, next));
+  }
+  elements.plotTemperatureUnitSelect.dataset.previousUnit = next;
+  refreshPlotTemperatureLabels();
+  updatePlotPanels();
+}
+
+function invalidateLastPlot() {
+  state.lastPlot = null;
+  elements.plotDownloadButton.disabled = true;
 }
 
 function updatePlotPanels() {
   if (!state.manifest) return;
   const sweep = elements.plotSweepSelect.value;
+  const spectrumMode = sweep === 'frequency';
   const energyMode = selectedPlotEnergyMode();
-  elements.plotFixedDensityPanel.hidden = sweep !== 'temperature';
-  elements.plotFixedTemperaturePanel.hidden = sweep !== 'density';
+
+  elements.plotFixedDensityPanel.hidden = !(sweep === 'temperature' || spectrumMode);
+  elements.plotFixedTemperaturePanel.hidden = !(sweep === 'density' || spectrumMode);
+  elements.plotSpectralAxisPanel.hidden = !spectrumMode;
+  elements.plotEnergyTreatment.hidden = spectrumMode;
+
   elements.plotDensityNativeLabel.hidden = elements.plotDensityMode.value !== 'native';
   elements.plotDensityCustomLabel.hidden = elements.plotDensityMode.value !== 'custom';
   elements.plotTemperatureNativeLabel.hidden = elements.plotTemperatureMode.value !== 'native';
   elements.plotTemperatureCustomLabel.hidden = elements.plotTemperatureMode.value !== 'custom';
-  elements.plotGroupPanel.hidden = energyMode !== 'group';
-  elements.plotIntegratedHelp.hidden = energyMode !== 'integrated';
-  if (energyMode === 'integrated') {
+
+  elements.plotGroupPanel.hidden = spectrumMode || energyMode !== 'group';
+  elements.plotIntegratedHelp.hidden = spectrumMode || energyMode !== 'integrated';
+  if (!spectrumMode && energyMode === 'integrated') {
     elements.plotIntegratedHelp.textContent = (
       'Uses the conservative full-range weighted mean for the selected field: '
       + 'Planck arithmetic for absorption and scattering, Rosseland harmonic for total opacity, '
@@ -800,12 +903,94 @@ function makeSpecificGroupPlotQuery(field, sweep, fixedValue, group) {
   };
 }
 
+function makeSpectralPlotQuery(field, temperature, density) {
+  const temperatures = [temperature];
+  const densities = [density];
+  const temperatureBrackets = [findLogBracket(state.axes.temp_eV, temperature, 'Temperature')];
+  const densityBrackets = [findLogBracket(state.axes.rho_gcc, density, 'Density')];
+  const energy = {
+    mode: 'native',
+    outputEdges: [...state.axes.hnu_ev_edges],
+    nativeGroupStart: 0,
+    nativeGroupStopExclusive: state.manifest.dimensions.groups,
+    outputBinCount: state.manifest.dimensions.groups,
+  };
+  const chunks = uniqueRequiredChunks(field, temperatureBrackets, energy);
+  return {
+    field,
+    temperatures,
+    densities,
+    temperatureBrackets,
+    densityBrackets,
+    energy,
+    spectra: 1,
+    rowCount: energy.outputBinCount,
+    chunks,
+    compressedBytes: chunks.reduce((sum, chunk) => sum + chunk.compressed_bytes, 0),
+  };
+}
+
+function makeSpectrumPlotQuery(field, temperature, density) {
+  const temperatures = [temperature];
+  const densities = [density];
+  const temperatureBrackets = [findLogBracket(state.axes.temp_eV, temperature, 'Temperature')];
+  const densityBrackets = [findLogBracket(state.axes.rho_gcc, density, 'Density')];
+  const groupCount = state.manifest.dimensions.groups;
+  const energy = {
+    mode: 'native',
+    outputEdges: [...state.axes.hnu_ev_edges],
+    nativeGroupStart: 0,
+    nativeGroupStopExclusive: groupCount,
+    outputBinCount: groupCount,
+  };
+  const chunks = uniqueRequiredChunks(field, temperatureBrackets, energy);
+  return {
+    field,
+    temperatures,
+    densities,
+    temperatureBrackets,
+    densityBrackets,
+    energy,
+    spectra: 1,
+    rowCount: groupCount,
+    chunks,
+    compressedBytes: chunks.reduce((sum, chunk) => sum + chunk.compressed_bytes, 0),
+  };
+}
+
 function getPlotDefinition() {
   const field = elements.plotFieldSelect.value;
   if (!(field in state.manifest.field_metadata)) {
     throw new Error(`Unknown opacity field: ${field}`);
   }
+
   const sweep = elements.plotSweepSelect.value;
+  const temperatureUnit = glowPlotTemperatureUnit();
+
+  if (sweep === 'frequency') {
+    const temperature = plotFixedTemperature();
+    const density = plotFixedDensity();
+    const spectralUnit = elements.plotSpectralUnitSelect.value === 'Hz' ? 'Hz' : 'eV';
+    const query = makeSpectrumPlotQuery(field, temperature, density);
+    return {
+      field,
+      sweep,
+      temperature,
+      density,
+      temperatureUnit,
+      spectralUnit,
+      energyMode: 'spectrum',
+      pointCount: state.manifest.dimensions.groups,
+      compressedBytes: query.compressedBytes,
+      energyLabel: (
+        `${state.manifest.dimensions.groups} native groups; `
+        + `T = ${glowFormatPlotTemperature(temperature, temperatureUnit)}; `
+        + `density = ${formatScientific(density)} g cm^-3`
+      ),
+      query,
+    };
+  }
+
   const fixedValue = sweep === 'temperature' ? plotFixedDensity() : plotFixedTemperature();
   const energyMode = selectedPlotEnergyMode();
   const pointCount = sweep === 'temperature'
@@ -819,12 +1004,13 @@ function getPlotDefinition() {
       field,
       sweep,
       fixedValue,
+      temperatureUnit,
       energyMode,
       pointCount,
       compressedBytes: info.compressed_bytes,
       energyLabel: field === 'kplanck_scattering'
-        ? 'Full published energy range — Planck-weighted arithmetic mean'
-        : 'Full published energy range — weighted mean',
+        ? 'Full published energy range -- Planck-weighted arithmetic mean'
+        : 'Full published energy range -- weighted mean',
     };
   }
 
@@ -838,6 +1024,7 @@ function getPlotDefinition() {
     field,
     sweep,
     fixedValue,
+    temperatureUnit,
     energyMode,
     group,
     pointCount,
@@ -854,19 +1041,22 @@ function updatePlotSummary() {
     const definition = getPlotDefinition();
     elements.plotPointSummary.textContent = definition.pointCount.toLocaleString();
     elements.plotTransferSummary.textContent = formatBytes(definition.compressedBytes);
+    elements.plotEnergySummaryLabel.textContent = definition.sweep === 'frequency' ? 'Spectrum' : 'Energy';
     elements.plotEnergySummary.textContent = definition.energyLabel;
-    const group = Math.max(
-      0,
-      Math.min(
-        state.manifest.dimensions.groups - 1,
-        Number.parseInt(elements.plotGroupInput.value, 10) || 0,
-      ),
-    );
-    elements.plotGroupRange.textContent = groupEnergyLabel(group);
+    if (definition.sweep !== 'frequency') {
+      const group = Math.max(
+        0,
+        Math.min(
+          state.manifest.dimensions.groups - 1,
+          Number.parseInt(elements.plotGroupInput.value, 10) || 0,
+        ),
+      );
+      elements.plotGroupRange.textContent = groupEnergyLabel(group);
+    }
   } catch (error) {
-    elements.plotPointSummary.textContent = '—';
-    elements.plotTransferSummary.textContent = '—';
-    elements.plotEnergySummary.textContent = '—';
+    elements.plotPointSummary.textContent = '--';
+    elements.plotTransferSummary.textContent = '--';
+    elements.plotEnergySummary.textContent = '--';
     showPlotError(error.message);
   }
 }
@@ -894,7 +1084,11 @@ function integratedPlotPoints(definition, values) {
         temperatureBracket,
         densityBracket,
       );
-      points.push({ x: state.axes.temp_eV[ti], y: result.value, status: result.status });
+      points.push({
+        x: glowTemperatureFromEv(state.axes.temp_eV[ti], definition.temperatureUnit),
+        y: result.value,
+        status: result.status,
+      });
     }
   } else {
     const temperatureBracket = findLogBracket(
@@ -923,11 +1117,61 @@ async function specificGroupPlotPoints(definition) {
   const points = [];
   forEachResult(definition.query, loadedChunks, (row) => {
     points.push({
-      x: definition.sweep === 'temperature' ? row.temperature : row.density,
+      x: definition.sweep === 'temperature'
+        ? glowTemperatureFromEv(row.temperature, definition.temperatureUnit)
+        : row.density,
       y: row.opacity,
       status: row.status,
     });
   });
+  return points;
+}
+
+async function spectralPlotPoints(definition) {
+  const loadedChunks = await loadQueryChunks(definition.query);
+  const spectrum = buildInterpolatedNativeSpectrum(
+    definition.query, loadedChunks, 0, 0, definition.field,
+  );
+  const points = [];
+  for (let group = 0; group < definition.query.energy.outputBinCount; group += 1) {
+    const low = state.axes.hnu_ev_edges[group];
+    const high = state.axes.hnu_ev_edges[group + 1];
+    const centerEV = Math.sqrt(low * high);
+    points.push({
+      x: spectralCoordinateFromEV(centerEV, definition.spectralUnit),
+      y: spectrum.values[group],
+      status: spectrum.statuses[group],
+      group,
+      energyLowEV: low,
+      energyHighEV: high,
+    });
+  }
+  return points;
+}
+
+async function spectrumPlotPoints(definition) {
+  const loadedChunks = await loadQueryChunks(definition.query);
+  const spectrum = buildInterpolatedNativeSpectrum(
+    definition.query,
+    loadedChunks,
+    0,
+    0,
+    definition.field,
+  );
+  const points = [];
+  for (let group = 0; group < spectrum.values.length; group += 1) {
+    const energyLow = state.axes.hnu_ev_edges[group];
+    const energyHigh = state.axes.hnu_ev_edges[group + 1];
+    const energyCenter = Math.sqrt(energyLow * energyHigh);
+    points.push({
+      x: definition.spectralUnit === 'Hz' ? energyCenter * GLOW_HZ_PER_EV : energyCenter,
+      y: spectrum.values[group],
+      status: spectrum.statuses[group],
+      group,
+      energyLow,
+      energyHigh,
+    });
+  }
   return points;
 }
 
@@ -972,22 +1216,14 @@ function renderLinePlot(definition, points) {
   const innerHeight = height - margin.top - margin.bottom;
   const logX = elements.plotLogX.checked;
   const logY = elements.plotLogY.checked;
-  const { drawable, xMin, xMax, yMin, yMax } = preparePlotDomain(
-    points, logX, logY,
-  );
+  const { drawable, xMin, xMax, yMin, yMax } = preparePlotDomain(points, logX, logY);
 
   const xProject = logX
-    ? (value) => margin.left + (
-      (Math.log(value) - Math.log(xMin)) / (Math.log(xMax) - Math.log(xMin))
-    ) * innerWidth
+    ? (value) => margin.left + ((Math.log(value) - Math.log(xMin)) / (Math.log(xMax) - Math.log(xMin))) * innerWidth
     : (value) => margin.left + ((value - xMin) / (xMax - xMin)) * innerWidth;
   const yProject = logY
-    ? (value) => margin.top + innerHeight - (
-      (Math.log(value) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))
-    ) * innerHeight
-    : (value) => margin.top + innerHeight - (
-      (value - yMin) / (yMax - yMin)
-    ) * innerHeight;
+    ? (value) => margin.top + innerHeight - ((Math.log(value) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))) * innerHeight
+    : (value) => margin.top + innerHeight - ((value - yMin) / (yMax - yMin)) * innerHeight;
 
   const svg = svgElement('svg', {
     viewBox: `0 0 ${width} ${height}`,
@@ -1004,7 +1240,6 @@ function renderLinePlot(definition, points) {
 
   const xTicks = logX ? logarithmicTicks(xMin, xMax) : linearTicks(xMin, xMax);
   const yTicks = logY ? logarithmicTicks(yMin, yMax) : linearTicks(yMin, yMax);
-
   for (const tick of yTicks) {
     const y = yProject(tick.value);
     svg.append(svgElement('line', {
@@ -1021,7 +1256,6 @@ function renderLinePlot(definition, points) {
       'text-anchor': 'end',
     }, tick.label));
   }
-
   for (const tick of xTicks) {
     const x = xProject(tick.value);
     svg.append(svgElement('line', {
@@ -1038,7 +1272,6 @@ function renderLinePlot(definition, points) {
       'text-anchor': 'middle',
     }, tick.label));
   }
-
   svg.append(svgElement('line', {
     x1: margin.left,
     x2: margin.left,
@@ -1072,18 +1305,26 @@ function renderLinePlot(definition, points) {
     const circle = svgElement('circle', {
       cx: xProject(point.x),
       cy: yProject(point.y),
-      r: 2.6,
+      r: definition.sweep === 'frequency' ? 1.8 : 2.6,
       class: 'plot-data-point',
     });
-    circle.append(svgElement('title', {}, (
-      `x=${point.x.toExponential(8)}; opacity=${point.y.toExponential(8)}; status=${point.status}`
-    )));
+    const title = definition.sweep === 'frequency'
+      ? `group=${point.group}; energy=[${point.energyLow.toExponential(8)}, ${point.energyHigh.toExponential(8)}] eV; x=${point.x.toExponential(8)}; opacity=${point.y.toExponential(8)}; status=${point.status}`
+      : `x=${point.x.toExponential(8)}; opacity=${point.y.toExponential(8)}; status=${point.status}`;
+    circle.append(svgElement('title', {}, title));
     svg.append(circle);
   }
 
-  const xLabel = definition.sweep === 'temperature'
-    ? `Temperature [eV]${logX ? ' — log scale' : ' — linear scale'}`
-    : `Density [g cm⁻³]${logX ? ' — log scale' : ' — linear scale'}`;
+  let xLabel;
+  if (definition.sweep === 'temperature') {
+    xLabel = `Temperature [${definition.temperatureUnit}]${logX ? ' -- log scale' : ' -- linear scale'}`;
+  } else if (definition.sweep === 'density') {
+    xLabel = `Density [g cm^-3]${logX ? ' -- log scale' : ' -- linear scale'}`;
+  } else {
+    xLabel = definition.spectralUnit === 'Hz'
+      ? `Frequency [Hz]${logX ? ' -- log scale' : ' -- linear scale'}`
+      : `Photon energy [eV]${logX ? ' -- log scale' : ' -- linear scale'}`;
+  }
   svg.append(svgElement('text', {
     x: margin.left + innerWidth / 2,
     y: height - 20,
@@ -1096,21 +1337,22 @@ function renderLinePlot(definition, points) {
     class: 'plot-axis-label',
     'text-anchor': 'middle',
     transform: `rotate(-90 24 ${margin.top + innerHeight / 2})`,
-  }, `Opacity [cm² g⁻¹] — ${logY ? 'log' : 'linear'} scale`));
+  }, `Opacity [cm^2 g^-1] -- ${logY ? 'log' : 'linear'} scale`));
 
   elements.plotChart.replaceChildren(svg);
   const metadata = state.manifest.field_metadata[definition.field];
-  const fixedLabel = definition.sweep === 'temperature'
-    ? `density = ${formatScientific(definition.fixedValue)} g cm⁻³`
-    : `temperature = ${formatScientific(definition.fixedValue)} eV`;
-  elements.plotDescription.textContent = (
-    `${metadata.label}; ${fixedLabel}; ${definition.energyLabel}.`
-  );
+  let fixedLabel;
+  if (definition.sweep === 'temperature') {
+    fixedLabel = `density = ${formatScientific(definition.fixedValue)} g cm^-3`;
+  } else if (definition.sweep === 'density') {
+    fixedLabel = `temperature = ${glowFormatPlotTemperature(definition.fixedValue, definition.temperatureUnit)}`;
+  } else {
+    fixedLabel = `temperature = ${glowFormatPlotTemperature(definition.temperature, definition.temperatureUnit)}; density = ${formatScientific(definition.density)} g cm^-3`;
+  }
+  elements.plotDescription.textContent = `${metadata.label}; ${fixedLabel}; ${definition.energyLabel}.`;
 
   const omitted = points.length - drawable.length;
-  const warnings = points.filter((point) => (
-    point.status !== 'ok' && point.status !== 'ok_zero'
-  )).length;
+  const warnings = points.filter((point) => point.status !== 'ok' && point.status !== 'ok_zero').length;
   elements.plotWarningBadge.textContent = `${drawable.length} plotted; ${omitted} omitted`;
   if (logY) {
     elements.plotZeroNote.textContent = omitted > 0
@@ -1129,9 +1371,11 @@ async function drawPlot() {
   clearPlotError();
   try {
     const definition = getPlotDefinition();
-    setBusy(true, `Loading line-plot data (${formatBytes(definition.compressedBytes)})…`);
+    setBusy(true, `Loading line-plot data (${formatBytes(definition.compressedBytes)})...`);
     let points;
-    if (definition.energyMode === 'integrated') {
+    if (definition.sweep === 'frequency') {
+      points = await spectrumPlotPoints(definition);
+    } else if (definition.energyMode === 'integrated') {
       const values = await loadPlotField(definition.field);
       points = integratedPlotPoints(definition, values);
     } else {
@@ -1150,21 +1394,39 @@ async function drawPlot() {
 function downloadPlotCsv() {
   if (!state.lastPlot) return;
   const { definition, points } = state.lastPlot;
-  const xName = definition.sweep === 'temperature' ? 'temperature_eV' : 'density_g_cm-3';
+  const xName = definition.sweep === 'temperature'
+    ? (definition.temperatureUnit === 'K' ? 'temperature_K' : 'temperature_eV')
+    : definition.sweep === 'density'
+      ? 'density_g_cm-3'
+      : (definition.spectralUnit === 'Hz' ? 'frequency_Hz' : 'photon_energy_eV');
+  const spectrumMode = definition.sweep === 'frequency';
+  const columnHeader = spectrumMode
+    ? `${xName},group_index,energy_low_eV,energy_high_eV,opacity_cm2_g-1,status`
+    : `${xName},opacity_cm2_g-1,status`;
   const lines = [
-    `# GLOW line plot`,
+    '# GLOW line plot',
     `# field: ${definition.field}`,
     `# energy: ${definition.energyLabel}`,
     `# x_axis: ${xName}`,
     `# y_axis: opacity_cm2_g-1 (${elements.plotLogY.checked ? 'log display' : 'linear display'})`,
-    `${xName},opacity_cm2_g-1,status`,
+    columnHeader,
   ];
   for (const point of points) {
-    lines.push([
-      point.x.toExponential(16),
-      Number.isFinite(point.y) ? point.y.toExponential(16) : 'nan',
-      point.status,
-    ].join(','));
+    const values = spectrumMode
+      ? [
+        point.x.toExponential(16),
+        point.group,
+        point.energyLow.toExponential(16),
+        point.energyHigh.toExponential(16),
+        Number.isFinite(point.y) ? point.y.toExponential(16) : 'nan',
+        point.status,
+      ]
+      : [
+        point.x.toExponential(16),
+        Number.isFinite(point.y) ? point.y.toExponential(16) : 'nan',
+        point.status,
+      ];
+    lines.push(values.join(','));
   }
   const blob = new Blob([`${lines.join('\n')}\n`], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -1193,7 +1455,9 @@ function populateControls() {
     option.value = String(index);
     option.textContent = `${index}: ${formatScientific(temperature, 5)} eV`;
     elements.temperatureSelect.append(option);
-    elements.plotTemperatureSelect.append(option.cloneNode(true));
+    const plotOption = option.cloneNode(true);
+    plotOption.textContent = '';
+    elements.plotTemperatureSelect.append(plotOption);
   });
 
   state.axes.rho_gcc.forEach((density, index) => {
@@ -1221,6 +1485,11 @@ function populateControls() {
   elements.plotTemperatureSelect.value = String(Math.floor(state.axes.temp_eV.length / 2));
   elements.plotDensityCustom.value = String(state.axes.rho_gcc[Math.floor(state.axes.rho_gcc.length / 2)]);
   elements.plotTemperatureCustom.value = String(state.axes.temp_eV[Math.floor(state.axes.temp_eV.length / 2)]);
+  state.plotTemperatureUnit = glowPlotTemperatureUnit();
+  glowRefreshPlotTemperatureControls();
+  elements.plotTemperatureUnitSelect.dataset.previousUnit = elements.plotTemperatureUnitSelect.value;
+  refreshPlotTemperatureLabels();
+  elements.previewTemperatureHeading.textContent = 'Temperature [eV]';
 }
 
 function attachEvents() {
@@ -1247,10 +1516,17 @@ function attachEvents() {
 
   elements.previewButton.addEventListener('click', previewSelection);
   elements.downloadButton.addEventListener('click', downloadSelection);
+  elements.temperatureOutputUnitSelect.addEventListener('change', () => {
+    elements.previewTemperatureHeading.textContent = (
+      `Temperature [${temperatureUnitLabel(elements.temperatureOutputUnitSelect.value)}]`
+    );
+    elements.previewSection.hidden = true;
+  });
 
   [
     elements.plotFieldSelect,
     elements.plotSweepSelect,
+    elements.plotSpectralUnitSelect,
     elements.plotLogX,
     elements.plotLogY,
     elements.plotDensityMode,
@@ -1261,11 +1537,27 @@ function attachEvents() {
     elements.plotTemperatureCustom,
     elements.plotGroupInput,
   ].forEach((control) => {
-    control.addEventListener('input', updatePlotPanels);
-    control.addEventListener('change', updatePlotPanels);
+    control.addEventListener('input', () => {
+      invalidateLastPlot();
+      updatePlotPanels();
+    });
+    control.addEventListener('change', () => {
+      invalidateLastPlot();
+      updatePlotPanels();
+    });
   });
+  elements.plotTemperatureUnitSelect.addEventListener('change', () => {
+    invalidateLastPlot();
+    updatePlotTemperatureUnit();
+  });
+  elements.plotTemperatureUnitSelect.addEventListener(
+    'change', glowHandlePlotTemperatureUnitChange,
+  );
   document.querySelectorAll('input[name="plot-energy-mode"]')
-    .forEach((radio) => radio.addEventListener('change', updatePlotPanels));
+    .forEach((radio) => radio.addEventListener('change', () => {
+      invalidateLastPlot();
+      updatePlotPanels();
+    }));
   elements.plotButton.addEventListener('click', drawPlot);
   elements.plotDownloadButton.addEventListener('click', downloadPlotCsv);
 }
