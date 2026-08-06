@@ -1677,7 +1677,10 @@ async function selectTable(tableId) {
     updatePlotPanels();
   } catch (error) {
     loadingError = `Table loading failed: ${error.message}`;
-    if (state.activeTable) elements.tableSelect.value = state.activeTable.id;
+    if (state.activeTable) {
+      elements.tableSelect.value = state.activeTable.id;
+      elements.plotTableSelect.value = state.activeTable.id;
+    }
   } finally {
     setBusy(false);
     if (loadingError) {

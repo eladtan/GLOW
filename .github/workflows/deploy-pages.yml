@@ -40,14 +40,18 @@ jobs:
           source: .
           destination: ./_site
 
+      - name: Verify lightweight site output
+        shell: bash
+        run: |
+          test -f ./_site/index.html
+          test -f ./_site/tables.json
+          test ! -e ./_site/tables
+          test ! -e ./_site/solar_final
+
       - name: Upload Pages artifact
-        id: upload
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./_site
-
-    outputs:
-      artifact_id: ${{ steps.upload.outputs.artifact_id }}
 
   deploy:
     environment:
@@ -55,23 +59,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 35
     steps:
-      - name: Checkout deployment script
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          sparse-checkout: .github/scripts
-
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/github-script@v8
-        env:
-          PAGES_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
-          PAGES_DEPLOY_TIMEOUT_MS: "1800000"
-        with:
-          github-token: ${{ github.token }}
-          retries: 3
-          script: |
-            const deployPages = require('./.github/scripts/deploy-pages.js');
-            await deployPages({ github, context, core });
+        uses: actions/deploy-pages@v5

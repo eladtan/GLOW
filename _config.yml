@@ -1,4 +1,6 @@
 exclude:
-  - solar_final
-  - tables
-  - tables_float64
+  - solar_final/
+  - tables/
+  - tables_float64/
+include:
+  - tables.json
