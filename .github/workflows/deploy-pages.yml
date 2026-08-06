@@ -28,6 +28,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             .
+            .github
             assets
 
       - name: Setup Pages
@@ -41,9 +42,13 @@ jobs:
           destination: ./_site
 
       - name: Upload Pages artifact
+        id: upload
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./_site
+
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact_id }}
 
   deploy:
     environment:
@@ -55,6 +60,13 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/github-script@v8
+        env:
+          PAGES_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          PAGES_DEPLOY_TIMEOUT_MS: "1800000"
         with:
-          timeout: 1800000
+          github-token: ${{ github.token }}
+          retries: 3
+          script: |
+            const deployPages = require('./.github/scripts/deploy-pages.js');
+            await deployPages({ github, context, core });
