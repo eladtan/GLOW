@@ -30,8 +30,12 @@ def main() -> None:
     assert {entry["id"] for entry in entries} == EXPECTED_IDS
 
     for entry in entries:
-        assert ".." not in Path(entry["data_root"]).parts
-        data_root = ROOT / entry["data_root"]
+        expected_data_root = (
+            "https://raw.githubusercontent.com/eladtan/GLOW/main/tables/"
+            f"{entry['id']}/web_data"
+        )
+        assert entry["data_root"] == expected_data_root
+        data_root = ROOT / "tables" / entry["id"] / "web_data"
         manifest = json.loads((data_root / "manifest.json").read_text())
         axes = json.loads((data_root / "axes.json").read_text())
         plot_manifest = json.loads((data_root / "plot" / "manifest.json").read_text())

@@ -1,2 +1,4 @@
 exclude:
   - solar_final
+  - tables
+  - tables_float64
