@@ -50,6 +50,7 @@ const elements = {
   form: document.querySelector('#selection-form'),
   tableSelect: document.querySelector('#table-select'),
   tableDescription: document.querySelector('#table-description'),
+  plotTableSelect: document.querySelector('#plot-table-select'),
   fieldSelect: document.querySelector('#field-select'),
   temperatureSelect: document.querySelector('#temperature-select'),
   temperatureList: document.querySelector('#temperature-list'),
@@ -195,6 +196,7 @@ function clearError() {
 
 function setBusy(isBusy, message = '') {
   elements.tableSelect.disabled = isBusy;
+  elements.plotTableSelect.disabled = isBusy;
   elements.previewButton.disabled = isBusy;
   elements.downloadButton.disabled = isBusy;
   elements.plotButton.disabled = isBusy;
@@ -1517,6 +1519,9 @@ function attachEvents() {
   elements.tableSelect.addEventListener('change', () => {
     selectTable(elements.tableSelect.value);
   });
+  elements.plotTableSelect.addEventListener('change', () => {
+    selectTable(elements.plotTableSelect.value);
+  });
 
   document.querySelectorAll('input[name="temperature-mode"], input[name="density-mode"], input[name="energy-mode"]')
     .forEach((radio) => radio.addEventListener('change', updateModePanels));
@@ -1612,6 +1617,7 @@ function populateTableSelector() {
     throw new Error('The opacity-table catalog does not contain any tables.');
   }
   elements.tableSelect.replaceChildren();
+  elements.plotTableSelect.replaceChildren();
   for (const table of tables) {
     if (!table.id || !table.data_root || !table.label) {
       throw new Error('The opacity-table catalog contains an incomplete entry.');
@@ -1620,6 +1626,7 @@ function populateTableSelector() {
     option.value = table.id;
     option.textContent = table.label;
     elements.tableSelect.append(option);
+    elements.plotTableSelect.append(option.cloneNode(true));
   }
 }
 
@@ -1653,6 +1660,7 @@ async function selectTable(tableId) {
 
     populateControls();
     elements.tableSelect.value = table.id;
+    elements.plotTableSelect.value = table.id;
     elements.tableDescription.textContent = table.description || '';
     elements.previewSection.hidden = true;
     elements.plotSection.hidden = true;
