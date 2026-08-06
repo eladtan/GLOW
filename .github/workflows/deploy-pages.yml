@@ -28,7 +28,6 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             .
-            .github
             assets
 
       - name: Setup Pages
@@ -58,6 +57,12 @@ jobs:
     needs: build
     timeout-minutes: 35
     steps:
+      - name: Checkout deployment script
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github/scripts
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/github-script@v8
