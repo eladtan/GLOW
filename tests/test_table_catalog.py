@@ -42,6 +42,7 @@ def main() -> None:
             "temperatures": 128,
         }
         assert set(manifest["field_metadata"]) == FIELDS
+        assert manifest["storage"]["dtype"] == "float32-le"
         assert len(axes["hnu_ev_edges"]) == 1025
         assert len(axes["rho_gcc"]) == 128
         assert len(axes["temp_eV"]) == 128
@@ -62,6 +63,7 @@ def main() -> None:
             path = data_root / "plot" / metadata["file"]
             assert path.is_file()
             assert metadata["shape"] == [128, 128]
+            assert metadata["dtype"] == "float32-le"
             assert read_gzip_size(path) == metadata["uncompressed_bytes"]
 
 

@@ -228,6 +228,23 @@ async function decompressGzip(response) {
   return new Response(stream).arrayBuffer();
 }
 
+function decodeOpacityArray(buffer, metadata) {
+  const dtype = metadata.dtype || state.manifest?.storage?.dtype;
+  const ArrayType = dtype === 'float32-le'
+    ? Float32Array
+    : dtype === 'float64-le'
+      ? Float64Array
+      : null;
+  if (!ArrayType) throw new Error(`Unsupported opacity data type: ${dtype}.`);
+
+  const expectedValues = metadata.shape.reduce((product, size) => product * size, 1);
+  const expectedBytes = expectedValues * ArrayType.BYTES_PER_ELEMENT;
+  if (buffer.byteLength !== expectedBytes) {
+    throw new Error(`${metadata.file} has ${buffer.byteLength} bytes; expected ${expectedBytes}.`);
+  }
+  return new ArrayType(buffer);
+}
+
 async function loadChunk(chunkInfo) {
   if (state.chunkCache.has(chunkInfo.file)) return state.chunkCache.get(chunkInfo.file);
 
@@ -236,11 +253,7 @@ async function loadChunk(chunkInfo) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
     const buffer = await decompressGzip(response);
-    const expectedValues = chunkInfo.shape.reduce((product, size) => product * size, 1);
-    if (buffer.byteLength !== expectedValues * 8) {
-      throw new Error(`${chunkInfo.file} has ${buffer.byteLength} bytes; expected ${expectedValues * 8}.`);
-    }
-    return new Float64Array(buffer);
+    return decodeOpacityArray(buffer, chunkInfo);
   })();
 
   state.chunkCache.set(chunkInfo.file, promise);
@@ -265,11 +278,7 @@ async function loadPlotField(field) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
     const buffer = await decompressGzip(response);
-    const expectedValues = info.shape.reduce((product, size) => product * size, 1);
-    if (buffer.byteLength !== expectedValues * 8) {
-      throw new Error(`${info.file} has ${buffer.byteLength} bytes; expected ${expectedValues * 8}.`);
-    }
-    return new Float64Array(buffer);
+    return decodeOpacityArray(buffer, info);
   })();
 
   state.plotCache.set(info.file, promise);

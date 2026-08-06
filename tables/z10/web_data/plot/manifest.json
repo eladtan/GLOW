@@ -14,16 +14,16 @@
         "rho",
         "temp"
       ],
-      "compressed_bytes": 126783,
-      "dtype": "float64-le",
+      "compressed_bytes": 62866,
+      "dtype": "float32-le",
       "file": "kplanck_grey.f64.gz",
       "positive_count": 16384,
-      "sha256": "dbd3d4c601d2f83d58bbbae5bc514863f1735ac2f90e7ee245f4243666a2376f",
+      "sha256": "fd9dad7157760aa3f272768b97bd589a73ad6da75a0a5d1328d48bd424f15832",
       "shape": [
         128,
         128
       ],
-      "uncompressed_bytes": 131072,
+      "uncompressed_bytes": 65536,
       "zero_count": 0
     },
     "kplanck_scattering": {
@@ -31,16 +31,16 @@
         "rho",
         "temp"
       ],
-      "compressed_bytes": 105642,
-      "dtype": "float64-le",
+      "compressed_bytes": 38377,
+      "dtype": "float32-le",
       "file": "kplanck_scattering_grey.f64.gz",
       "positive_count": 16384,
-      "sha256": "43fdc4864b576214424edcbdb54a21de6f169d6178d173d783a544d2ba341044",
+      "sha256": "27c42c82d3afe68ad7757d3a9a89040e5675274fed92b417fe28d5750214b1e2",
       "shape": [
         128,
         128
       ],
-      "uncompressed_bytes": 131072,
+      "uncompressed_bytes": 65536,
       "zero_count": 0
     },
     "krosseland": {
@@ -48,16 +48,16 @@
         "rho",
         "temp"
       ],
-      "compressed_bytes": 108302,
-      "dtype": "float64-le",
+      "compressed_bytes": 42216,
+      "dtype": "float32-le",
       "file": "krosseland_grey.f64.gz",
       "positive_count": 16384,
-      "sha256": "c6988fa11dc286d1ed455624a072b0e7d5ad1a53af13f7c5c7b790b4a5956b58",
+      "sha256": "297243dde9b57ad5d59722cf0a81bac7d41af1a48d1ea8a15fc8d9f1231ee79e",
       "shape": [
         128,
         128
       ],
-      "uncompressed_bytes": 131072,
+      "uncompressed_bytes": 65536,
       "zero_count": 0
     },
     "krosseland_absorption": {
@@ -65,16 +65,16 @@
         "rho",
         "temp"
       ],
-      "compressed_bytes": 126729,
-      "dtype": "float64-le",
+      "compressed_bytes": 63218,
+      "dtype": "float32-le",
       "file": "krosseland_absorption_grey.f64.gz",
       "positive_count": 16384,
-      "sha256": "2b90ea32081292454a7f3ef8af1d06ab5acbd9c07a944f8adc47a4a317fbfd45",
+      "sha256": "57f0e6432e164f77d58e0778e58df96296285aadc5652fbf4bc4533eff978f98",
       "shape": [
         128,
         128
       ],
-      "uncompressed_bytes": 131072,
+      "uncompressed_bytes": 65536,
       "zero_count": 0
     }
   },

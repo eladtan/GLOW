@@ -54,9 +54,19 @@ FIELD_METADATA = {
     },
 }
 
+BROWSER_DTYPES = {
+    'float32': np.dtype('<f4'),
+    'float64': np.dtype('<f8'),
+}
 
-def gzip_float64(path: Path, values: np.ndarray, level: int) -> dict[str, object]:
-    array = np.asarray(values, dtype='<f8', order='C')
+
+def gzip_values(
+    path: Path,
+    values: np.ndarray,
+    dtype: np.dtype,
+    level: int,
+) -> dict[str, object]:
+    array = np.asarray(values, dtype=dtype, order='C')
     raw = array.tobytes(order='C')
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.GzipFile(
@@ -67,7 +77,7 @@ def gzip_float64(path: Path, values: np.ndarray, level: int) -> dict[str, object
     return {
         'file': path.as_posix(),
         'shape': list(array.shape),
-        'dtype': 'float64-le',
+        'dtype': f'{dtype.name}-le',
         'axis_order': ['group', 'rho', 'temp'],
         'uncompressed_bytes': len(raw),
         'compressed_bytes': len(compressed),
@@ -88,6 +98,7 @@ def main() -> int:
     )
     parser.add_argument('--group-chunk-size', type=int, default=64)
     parser.add_argument('--gzip-level', type=int, default=9)
+    parser.add_argument('--dtype', choices=sorted(BROWSER_DTYPES), default='float64')
     args = parser.parse_args()
 
     if args.group_chunk_size <= 0:
@@ -95,6 +106,7 @@ def main() -> int:
 
     parts_dir = args.parts_dir.expanduser().resolve()
     output_dir = args.output_dir.expanduser().resolve()
+    browser_dtype = BROWSER_DTYPES[args.dtype]
     paths = sorted(parts_dir.glob(args.pattern))
     if not paths:
         raise FileNotFoundError(f'No files match {parts_dir / args.pattern}')
@@ -155,9 +167,10 @@ def main() -> int:
                     relative = Path('chunks') / f'part{part_index:02d}' / (
                         f'{field}_g{group_start:04d}_{group_stop:04d}.f64.gz'
                     )
-                    metadata = gzip_float64(
+                    metadata = gzip_values(
                         output_dir / relative,
                         values[group_start:group_stop, :, :],
+                        browser_dtype,
                         args.gzip_level,
                     )
                     # Store path relative to web_data, not absolute.
@@ -216,7 +229,7 @@ def main() -> int:
             'temperatures': int(temperatures.size),
         },
         'storage': {
-            'dtype': 'float64-le',
+            'dtype': f'{browser_dtype.name}-le',
             'compression': 'gzip',
             'axis_order': ['group', 'rho', 'temp'],
             'group_chunk_size': args.group_chunk_size,

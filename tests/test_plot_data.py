@@ -57,6 +57,8 @@ def main() -> None:
                 str(parts),
                 '--web-data-dir',
                 str(web),
+                '--dtype',
+                'float32',
             ],
             check=True,
         )
@@ -69,9 +71,10 @@ def main() -> None:
 
         for field, target in expected.items():
             info = manifest['fields'][field]
+            assert info['dtype'] == 'float32-le'
             with gzip.open(plot_dir / info['file'], 'rb') as handle:
-                values = np.frombuffer(handle.read(), dtype='<f8').reshape(info['shape'])
-            np.testing.assert_allclose(values, target, rtol=2e-13, atol=0.0)
+                values = np.frombuffer(handle.read(), dtype='<f4').reshape(info['shape'])
+            np.testing.assert_allclose(values, target, rtol=2e-7, atol=0.0)
 
     print('Planck-scattering line-plot data test passed.')
 

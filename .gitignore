@@ -1,5 +1,6 @@
 
 # Local backups
+tables_float64/
 *.before_*
 *.before_v*
 *.before_planck*

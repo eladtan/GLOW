@@ -55,6 +55,8 @@ def main() -> None:
                 str(out),
                 '--group-chunk-size',
                 '3',
+                '--dtype',
+                'float32',
             ],
             check=True,
         )
@@ -67,6 +69,7 @@ def main() -> None:
         }
         assert 'kplanck_scattering' in manifest['field_metadata']
         assert 'kross_scattering' not in manifest['field_metadata']
+        assert manifest['storage']['dtype'] == 'float32-le'
         assert len(axes['temp_eV']) == 4
 
         first_part = manifest['parts'][0]
@@ -76,8 +79,8 @@ def main() -> None:
             and item['group_start'] == 0
         )
         with gzip.open(out / chunk['file'], 'rb') as handle:
-            values = np.frombuffer(handle.read(), dtype='<f8').reshape(chunk['shape'])
-        np.testing.assert_allclose(values, 0.4)
+            values = np.frombuffer(handle.read(), dtype='<f4').reshape(chunk['shape'])
+        np.testing.assert_allclose(values, 0.4, rtol=2e-7, atol=0.0)
 
     print('Browser-data builder test passed.')
 

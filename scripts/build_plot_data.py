@@ -36,6 +36,10 @@ FIELDS = (
     "kplanck_scattering",
 )
 ROSS_C = 15.0 / (4.0 * math.pi**4)
+BROWSER_DTYPES = {
+    "float32": np.dtype("<f4"),
+    "float64": np.dtype("<f8"),
+}
 
 
 def logsumexp(values: np.ndarray, axis: int) -> np.ndarray:
@@ -205,8 +209,13 @@ def rosseland_absorption_mean(
     return result
 
 
-def write_gzip_float64(path: Path, values: np.ndarray, level: int) -> dict[str, object]:
-    little = np.asarray(values, dtype="<f8", order="C")
+def write_gzip_values(
+    path: Path,
+    values: np.ndarray,
+    dtype: np.dtype,
+    level: int,
+) -> dict[str, object]:
+    little = np.asarray(values, dtype=dtype, order="C")
     raw = little.tobytes(order="C")
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.GzipFile(filename=str(path), mode="wb", compresslevel=level, mtime=0) as handle:
@@ -216,7 +225,7 @@ def write_gzip_float64(path: Path, values: np.ndarray, level: int) -> dict[str, 
         "file": path.name,
         "shape": list(little.shape),
         "axis_order": ["rho", "temp"],
-        "dtype": "float64-le",
+        "dtype": f"{dtype.name}-le",
         "uncompressed_bytes": len(raw),
         "compressed_bytes": len(compressed),
         "sha256": hashlib.sha256(compressed).hexdigest(),
@@ -241,11 +250,13 @@ def main() -> int:
     )
     parser.add_argument("--quadrature-order", type=int, default=32)
     parser.add_argument("--gzip-level", type=int, default=9)
+    parser.add_argument("--dtype", choices=sorted(BROWSER_DTYPES), default="float64")
     args = parser.parse_args()
 
     edges, rho, temperatures, fields = load_parts(
         args.parts_dir.resolve(), args.pattern
     )
+    browser_dtype = BROWSER_DTYPES[args.dtype]
     if fields["kplanck"].shape != (1024, 128, 128):
         print(f"WARNING: unexpected table shape {fields['kplanck'].shape}")
 
@@ -280,8 +291,8 @@ def main() -> int:
         if np.any(values < 0.0) or np.any(~np.isfinite(values)):
             raise ValueError(f"{field} grey array contains invalid values")
         filename = f"{field}_grey.f64.gz"
-        metadata = write_gzip_float64(
-            output_dir / filename, values, args.gzip_level
+        metadata = write_gzip_values(
+            output_dir / filename, values, browser_dtype, args.gzip_level
         )
         metadata.update(
             {
