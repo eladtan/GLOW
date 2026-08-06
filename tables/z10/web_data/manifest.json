@@ -1,0 +1,1333 @@
+{
+  "dimensions": {
+    "densities": 128,
+    "groups": 1024,
+    "temperatures": 128
+  },
+  "field_metadata": {
+    "kplanck": {
+      "description": "Planck-weighted arithmetic mean of true absorption.",
+      "label": "Planck-mean absorption opacity",
+      "weighting": "Planck arithmetic"
+    },
+    "kplanck_scattering": {
+      "description": "Planck-weighted arithmetic mean of scattering opacity.",
+      "label": "Planck-mean scattering opacity",
+      "weighting": "Planck arithmetic"
+    },
+    "krosseland": {
+      "description": "Rosseland harmonic mean of absorption plus scattering.",
+      "label": "Rosseland-mean total opacity",
+      "weighting": "Rosseland harmonic"
+    },
+    "krosseland_absorption": {
+      "description": "Flux-weighted absorption using the total opacity in the transport denominator.",
+      "label": "Rosseland flux-weighted absorption opacity",
+      "weighting": "Rosseland transport"
+    }
+  },
+  "parts": [
+    {
+      "chunks": [
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8063640,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0000_0064.f64.gz",
+          "group_start": 0,
+          "group_stop": 64,
+          "sha256": "8fa8a33d18138a3448da848cf59493032f0fc644025b64ff8c6f8755b88c62f7",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8071668,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0064_0128.f64.gz",
+          "group_start": 64,
+          "group_stop": 128,
+          "sha256": "d16aa6c05d22124389000586b3e711ef57426c9b6423087b8951f51228e9bfcc",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8083443,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0128_0192.f64.gz",
+          "group_start": 128,
+          "group_stop": 192,
+          "sha256": "3e48ccea4505df7af07b5c99fa87546b854c551f15d85a4262c2d49426ce50e4",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8100989,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0192_0256.f64.gz",
+          "group_start": 192,
+          "group_stop": 256,
+          "sha256": "1a630bec1a44530cdf93415c64e0b60563304e45add119a4789abe16e734dede",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8097327,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0256_0320.f64.gz",
+          "group_start": 256,
+          "group_stop": 320,
+          "sha256": "0d63cf4492d5bbfab046c4f8fbcfd1e211adf65b2c174f8c68f511cdfe58837a",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8081220,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0320_0384.f64.gz",
+          "group_start": 320,
+          "group_stop": 384,
+          "sha256": "c732c93a3267f732f9b394c5956ae54afc8ef2dd3a28a57d1cd8a777ea3adfda",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8082804,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0384_0448.f64.gz",
+          "group_start": 384,
+          "group_stop": 448,
+          "sha256": "e76374843b2e6dc5a22af4ac6a7df830935e6d1c33d37e4dc7891a0a02987a39",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8083187,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0448_0512.f64.gz",
+          "group_start": 448,
+          "group_stop": 512,
+          "sha256": "2bad191526f0a209ea0c5e76509e723dd7f9f81faf59cf8d7d95825d0f70968e",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8079083,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0512_0576.f64.gz",
+          "group_start": 512,
+          "group_stop": 576,
+          "sha256": "dd6bddadc12016c57ba08ab8eff43067af0ec16293b3660c5fea0a0e52002fdd",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8077336,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0576_0640.f64.gz",
+          "group_start": 576,
+          "group_stop": 640,
+          "sha256": "c33112e9335e0475eef983fa40c317c8b9f6768b3812fa3b6c6aa7b1a281f670",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8075448,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0640_0704.f64.gz",
+          "group_start": 640,
+          "group_stop": 704,
+          "sha256": "d0f1e4c815ed4fe89f2475530822b80c672ef67f99ff67b8f94b36dd7e79cddd",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8067900,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0704_0768.f64.gz",
+          "group_start": 704,
+          "group_stop": 768,
+          "sha256": "8c86e18563ddd4677570f7ef763a74edee259d9b3c710d5651239eceb57f4ba5",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8067811,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0768_0832.f64.gz",
+          "group_start": 768,
+          "group_stop": 832,
+          "sha256": "fb3b78c73d2beb39261f752a668a4eb3b2f2f63234fc79378e9f517820a3ce7f",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8062026,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0832_0896.f64.gz",
+          "group_start": 832,
+          "group_stop": 896,
+          "sha256": "927df6525f1e17870ca7359c328633f8aa5184eb6667bf310813eb9f53079165",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8067092,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0896_0960.f64.gz",
+          "group_start": 896,
+          "group_stop": 960,
+          "sha256": "615097021244da9b74144942fc450c83dbe1ccb5867ab7c640d702ea4e02c9d6",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8067304,
+          "dtype": "float64-le",
+          "field": "kplanck",
+          "file": "chunks/part00/kplanck_g0960_1024.f64.gz",
+          "group_start": 960,
+          "group_stop": 1024,
+          "sha256": "a8f798b154a9271aa6dd76b7f9379f91f7d6f92021c206de8ccdb896a7231d0c",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7433281,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0000_0064.f64.gz",
+          "group_start": 0,
+          "group_stop": 64,
+          "sha256": "5b54e75104afad5894ad3971dab5be83260bad32e61a641b9d63774726b2fd6a",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7313948,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0064_0128.f64.gz",
+          "group_start": 64,
+          "group_stop": 128,
+          "sha256": "3aac870957f35394f5cdd2d58603aab2715c90a3e0c3b5f0aa32444f28ec0fe3",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7233616,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0128_0192.f64.gz",
+          "group_start": 128,
+          "group_stop": 192,
+          "sha256": "4370ad42818b6f9aefe8547f81ff69f22561bfdd1f7e05021c59c46c577f9e7c",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7158524,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0192_0256.f64.gz",
+          "group_start": 192,
+          "group_stop": 256,
+          "sha256": "49f946a9638fc2c3a7ffa16e4f66f17f381546cd0454cbca04d3c9184102ce2c",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7089146,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0256_0320.f64.gz",
+          "group_start": 256,
+          "group_stop": 320,
+          "sha256": "144c4d4a3097f356cf34b5de6806757ab30ec13963921d01229d85330049b143",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7022482,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0320_0384.f64.gz",
+          "group_start": 320,
+          "group_stop": 384,
+          "sha256": "79bd327466e8f24f75aa4099fab93befd8fd556a2c618e46bea897236306d42f",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6959899,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0384_0448.f64.gz",
+          "group_start": 384,
+          "group_stop": 448,
+          "sha256": "b938a33bf0a985d7425a1709bc3ce0beb5324effa3143d8751ded12b33a4f155",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6903244,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0448_0512.f64.gz",
+          "group_start": 448,
+          "group_stop": 512,
+          "sha256": "4a2aee5aead7e0a42be27ec7c3fef9fad8f4bec9436095db8b16293f30d7ef42",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6850512,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0512_0576.f64.gz",
+          "group_start": 512,
+          "group_stop": 576,
+          "sha256": "c6876e6acef4a52c2904227f9eb699d5f03172e6816a81a7f47ebd36036cb1e7",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6816454,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0576_0640.f64.gz",
+          "group_start": 576,
+          "group_stop": 640,
+          "sha256": "94c13473a790149e9924f2c8ef5cd17a89db1f04278c526da0dccdce1deb8b44",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6780865,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0640_0704.f64.gz",
+          "group_start": 640,
+          "group_stop": 704,
+          "sha256": "7e8577416de87a1682d74de7b718ba55553e46ee9e7712478efaebdbac519888",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6738115,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0704_0768.f64.gz",
+          "group_start": 704,
+          "group_stop": 768,
+          "sha256": "ce5c39b11f14e6a78e0a30239afcfc05161e20874092e649f3fb72293124c673",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6775184,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0768_0832.f64.gz",
+          "group_start": 768,
+          "group_stop": 832,
+          "sha256": "842ea4b923b038662c02527184f26b53220f8900eb82e2eecadd35e19561808e",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 3783455,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0832_0896.f64.gz",
+          "group_start": 832,
+          "group_stop": 896,
+          "sha256": "dc8e4e4611d4d4d120038aa75b75bd23288cff07c40474d95fa970bb19b99d01",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 2311475,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0896_0960.f64.gz",
+          "group_start": 896,
+          "group_stop": 960,
+          "sha256": "fec196b3429d5067c148255d9717f2e7a89574b98764b36ccb66467d24e1fd1d",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 2307250,
+          "dtype": "float64-le",
+          "field": "kplanck_scattering",
+          "file": "chunks/part00/kplanck_scattering_g0960_1024.f64.gz",
+          "group_start": 960,
+          "group_stop": 1024,
+          "sha256": "be7694699ea2294241f9e2ff5e83286c3e1b68826e790f733e0eddb57b678d4f",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7752289,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0000_0064.f64.gz",
+          "group_start": 0,
+          "group_stop": 64,
+          "sha256": "9259c5f0709f27f28ad666a9501bf7f8e488bc1e8bfdcc625b71f6ad43ddd7fc",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7618133,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0064_0128.f64.gz",
+          "group_start": 64,
+          "group_stop": 128,
+          "sha256": "111f3bdecd98330e6e3f8f2f87016992c0315143055ca3dcbb892e782bd68a75",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7537106,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0128_0192.f64.gz",
+          "group_start": 128,
+          "group_stop": 192,
+          "sha256": "527a496f6be55ae3b3ec869e3c660bad644118db457239e9da83f23fa5be7d04",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7480819,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0192_0256.f64.gz",
+          "group_start": 192,
+          "group_stop": 256,
+          "sha256": "b6cbd0af2851cf390edd28f647828658c3f80b419f071d69a5a60915ab7bd5f8",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7394521,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0256_0320.f64.gz",
+          "group_start": 256,
+          "group_stop": 320,
+          "sha256": "511ae71a0a8010ce0ef0caccd7a16e358736f09e9d8e07cc59833722a1628ce9",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7287787,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0320_0384.f64.gz",
+          "group_start": 320,
+          "group_stop": 384,
+          "sha256": "9a78556fa80a689b023ed280729d8f9e45b62315dcc20045ef86ff78ecadfc72",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7203630,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0384_0448.f64.gz",
+          "group_start": 384,
+          "group_stop": 448,
+          "sha256": "5cbdcf2c8dbae9d943a70d2faa0b603e18adefcb68b5571669feda7f8988cd02",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7132795,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0448_0512.f64.gz",
+          "group_start": 448,
+          "group_stop": 512,
+          "sha256": "d16c8b078f2cf52abf2e3a9e9d3a9c7a57606cce1c249eae500dd3e017f4f7f1",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7067167,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0512_0576.f64.gz",
+          "group_start": 512,
+          "group_stop": 576,
+          "sha256": "c914a993f1881d4cea8f1279ff96e7804796851bd19a79048628c9c9765bad7b",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7038040,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0576_0640.f64.gz",
+          "group_start": 576,
+          "group_stop": 640,
+          "sha256": "79f32781ecb1ecd59614e633ca6f1cc099eb5b0465a902dbec0eefb42a32ca12",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7051035,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0640_0704.f64.gz",
+          "group_start": 640,
+          "group_stop": 704,
+          "sha256": "8dda8de35779dc28b17aa36683f60bdc4d534619780970f0d7f880daef927503",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6942699,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0704_0768.f64.gz",
+          "group_start": 704,
+          "group_stop": 768,
+          "sha256": "411fa3ab49c9ce487beac3d51667c4cfb50991ea3ea0be84ff584e16d751c7cc",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 6881576,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0768_0832.f64.gz",
+          "group_start": 768,
+          "group_stop": 832,
+          "sha256": "80be468f1ab67790daeb0b4a31e60f7ffa67de1b12e51175dd5e8fe62b1b6bf8",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7069304,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0832_0896.f64.gz",
+          "group_start": 832,
+          "group_stop": 896,
+          "sha256": "3fcce64ccf743f2dbe2b18f345bb22e922c25ea5d144e54a1b9991299f31d8de",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7189269,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0896_0960.f64.gz",
+          "group_start": 896,
+          "group_stop": 960,
+          "sha256": "264a85951698a6380f19e456fb60533e7435df5e17eea4febd459763e984810f",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 7183746,
+          "dtype": "float64-le",
+          "field": "krosseland",
+          "file": "chunks/part00/krosseland_g0960_1024.f64.gz",
+          "group_start": 960,
+          "group_stop": 1024,
+          "sha256": "4a3f27bcda49f250a1c70edad712a61f4997dc1aa38c9ca89c3c53fbcaa798ae",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8057998,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0000_0064.f64.gz",
+          "group_start": 0,
+          "group_stop": 64,
+          "sha256": "ccb6b48f78cb6522526a01253c536e6892d76bed66c5291ae48ebc035fe6e4a5",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8065538,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0064_0128.f64.gz",
+          "group_start": 64,
+          "group_stop": 128,
+          "sha256": "59b18bb4e72c53344038f648ca74b2b43eb1f19ea42e9292a0ebd37da7970a87",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8078337,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0128_0192.f64.gz",
+          "group_start": 128,
+          "group_stop": 192,
+          "sha256": "6b6a72695fb57542cb09d8752b7dd08f899ce989511f0dbb6e7c68e161e6e125",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8098040,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0192_0256.f64.gz",
+          "group_start": 192,
+          "group_stop": 256,
+          "sha256": "dd90fa1d07e0b50bb31bda9065b24baad668ddedbb357095cf47b8c71d305670",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8092270,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0256_0320.f64.gz",
+          "group_start": 256,
+          "group_stop": 320,
+          "sha256": "4fe87e5296d2ccc8eb1646fc2f36d990294420d8372a66e4daa3f00247d6171b",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8079330,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0320_0384.f64.gz",
+          "group_start": 320,
+          "group_stop": 384,
+          "sha256": "83cc772e2b9f2ce987eed3dd89218fee18b7b34449aa490a6030a054381fc4b1",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8081099,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0384_0448.f64.gz",
+          "group_start": 384,
+          "group_stop": 448,
+          "sha256": "963a20d5423d5f3b815dd9af0564b4de42d8970e1d3de37f90f3b3123b9522d1",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8084210,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0448_0512.f64.gz",
+          "group_start": 448,
+          "group_stop": 512,
+          "sha256": "9ea0b8dcc9efedfb72a7ac78293939c25f88f8b4fdf4a4ac73b38a465df17487",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8075879,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0512_0576.f64.gz",
+          "group_start": 512,
+          "group_stop": 576,
+          "sha256": "ed44e2e5d1b511ef4e4538047af4f75ddbf1fb8f70abda070376d2503b69a3ef",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8080138,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0576_0640.f64.gz",
+          "group_start": 576,
+          "group_stop": 640,
+          "sha256": "74be097a2a408680183f7010c62a8fbc1aea4dac96700279da30053e8a737c4a",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8075010,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0640_0704.f64.gz",
+          "group_start": 640,
+          "group_stop": 704,
+          "sha256": "5cc0674407258d90cfa246b5b3aa5cec8e26d96490ee11abe0b8b8772926ad6f",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8045584,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0704_0768.f64.gz",
+          "group_start": 704,
+          "group_stop": 768,
+          "sha256": "02d11671d8fe384e40aa52266006c29771bfc23b7ea81cad8074d3f66e1418ca",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8040472,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0768_0832.f64.gz",
+          "group_start": 768,
+          "group_stop": 832,
+          "sha256": "1747050ed51b5938e4839fa61a1bcdb49c898e4c47108e766525a4d6fcb43bc7",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8046281,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0832_0896.f64.gz",
+          "group_start": 832,
+          "group_stop": 896,
+          "sha256": "61d9802b3baf38ead3f2e568158d85a3e6f072e804840d420f062c32165c37b2",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8055584,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0896_0960.f64.gz",
+          "group_start": 896,
+          "group_stop": 960,
+          "sha256": "63806f2c98ec4eed11bfba0d77a78923d34eb4029012e0f33490fe5dd4336a86",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        },
+        {
+          "axis_order": [
+            "group",
+            "rho",
+            "temp"
+          ],
+          "compressed_bytes": 8052397,
+          "dtype": "float64-le",
+          "field": "krosseland_absorption",
+          "file": "chunks/part00/krosseland_absorption_g0960_1024.f64.gz",
+          "group_start": 960,
+          "group_stop": 1024,
+          "sha256": "62347990a456e6a95c1ae9e9ff957de47e234e8481df5a1f143955271af81590",
+          "shape": [
+            64,
+            128,
+            128
+          ],
+          "uncompressed_bytes": 8388608
+        }
+      ],
+      "part_index": 0,
+      "source_file": "opacity_group_collapse.npz",
+      "temperature_count": 128,
+      "temperature_global_start": 0,
+      "temperature_global_stop": 128
+    }
+  ],
+  "schema": "glow-planck-scattering-v7",
+  "storage": {
+    "axis_order": [
+      "group",
+      "rho",
+      "temp"
+    ],
+    "compression": "gzip",
+    "dtype": "float64-le",
+    "group_chunk_size": 64
+  },
+  "total_compressed_bytes": 473643811,
+  "version": 2
+}

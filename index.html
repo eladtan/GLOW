@@ -256,6 +256,11 @@
               <div class="query-content">
                 <h4>Opacity</h4>
                 <label>
+                  Opacity table
+                  <select id="table-select" aria-describedby="table-description"></select>
+                </label>
+                <small id="table-description"></small>
+                <label>
                   Opacity field
                   <select id="field-select"></select>
                 </label>
@@ -428,13 +433,14 @@
           </div>
           <p class="panel-description">
             Sweep temperature, density, or the complete 1024-group photon-energy
-            spectrum. Temperature results and axes may be displayed in eV or kelvin.
+            spectrum from the selected opacity table. Temperature results and axes may be
+            displayed in eV or kelvin.
           </p>
 
           <form id="plot-form" hidden>
             <div class="form-grid two-columns plot-primary-grid">
               <label>
-                Dataset
+                Opacity field
                 <select id="plot-field-select"></select>
               </label>
               <label>

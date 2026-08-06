@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "default_table": "z1",
+  "tables": [
+    {
+      "id": "z0p1",
+      "label": "0.1 Z_sun",
+      "description": "Solar abundance pattern scaled to 0.1 times solar metallicity.",
+      "data_root": "tables/z0p1/web_data"
+    },
+    {
+      "id": "z1",
+      "label": "1 Z_sun",
+      "description": "Solar abundance pattern at solar metallicity.",
+      "data_root": "tables/z1/web_data"
+    },
+    {
+      "id": "z10",
+      "label": "10 Z_sun",
+      "description": "Solar abundance pattern scaled to 10 times solar metallicity.",
+      "data_root": "tables/z10/web_data"
+    }
+  ]
+}

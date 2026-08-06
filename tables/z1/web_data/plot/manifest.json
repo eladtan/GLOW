@@ -1,0 +1,84 @@
+{
+  "axis_order": [
+    "rho",
+    "temp"
+  ],
+  "description": "Full-frequency weighted opacity arrays for line plots",
+  "dimensions": {
+    "densities": 128,
+    "temperatures": 128
+  },
+  "fields": {
+    "kplanck": {
+      "axis_order": [
+        "rho",
+        "temp"
+      ],
+      "compressed_bytes": 126873,
+      "dtype": "float64-le",
+      "file": "kplanck_grey.f64.gz",
+      "positive_count": 16384,
+      "sha256": "04de2076a5872c46f21decbb172acff8b2b7a37ac5392aae934dfe113ad30546",
+      "shape": [
+        128,
+        128
+      ],
+      "uncompressed_bytes": 131072,
+      "zero_count": 0
+    },
+    "kplanck_scattering": {
+      "axis_order": [
+        "rho",
+        "temp"
+      ],
+      "compressed_bytes": 103709,
+      "dtype": "float64-le",
+      "file": "kplanck_scattering_grey.f64.gz",
+      "positive_count": 16384,
+      "sha256": "8838280c802478bac52a5a499387bf64d0ab3bae3eec9260e9a6e83846bc7063",
+      "shape": [
+        128,
+        128
+      ],
+      "uncompressed_bytes": 131072,
+      "zero_count": 0
+    },
+    "krosseland": {
+      "axis_order": [
+        "rho",
+        "temp"
+      ],
+      "compressed_bytes": 107200,
+      "dtype": "float64-le",
+      "file": "krosseland_grey.f64.gz",
+      "positive_count": 16384,
+      "sha256": "6cdbb5beaded18cf63072dac68df734c2513fae89b08045347c32e30ed8baa09",
+      "shape": [
+        128,
+        128
+      ],
+      "uncompressed_bytes": 131072,
+      "zero_count": 0
+    },
+    "krosseland_absorption": {
+      "axis_order": [
+        "rho",
+        "temp"
+      ],
+      "compressed_bytes": 126773,
+      "dtype": "float64-le",
+      "file": "krosseland_absorption_grey.f64.gz",
+      "positive_count": 16384,
+      "sha256": "97fc5bdddd55fd854004088c891a97f5b9965eada69428c07c345a9bd5a4cc7c",
+      "shape": [
+        128,
+        128
+      ],
+      "uncompressed_bytes": 131072,
+      "zero_count": 0
+    }
+  },
+  "quadrature_order": 32,
+  "source_groups": 1024,
+  "version": 1
+}

@@ -18,10 +18,7 @@ import {
   spectralUnitLabel,
 } from './unit_math.mjs';
 
-const DATA_ROOT = 'solar_final/web_data';
-const MANIFEST_URL = `${DATA_ROOT}/manifest.json`;
-const AXES_URL = `${DATA_ROOT}/axes.json`;
-const PLOT_MANIFEST_URL = `${DATA_ROOT}/plot/manifest.json`;
+const TABLE_CATALOG_URL = 'tables.json';
 
 // GLOW spectrum plot repair v9
 const GLOW_KELVIN_PER_EV = 11604.518121550082;
@@ -35,6 +32,9 @@ const MAX_SPECTRA = 4096;
 const TRANSFER_WARNING_BYTES = 100 * 1024 * 1024;
 
 const state = {
+  tableCatalog: null,
+  activeTable: null,
+  dataRoot: null,
   manifest: null,
   axes: null,
   chunkCache: new Map(),
@@ -48,6 +48,8 @@ const state = {
 const elements = {
   loadingMessage: document.querySelector('#loading-message'),
   form: document.querySelector('#selection-form'),
+  tableSelect: document.querySelector('#table-select'),
+  tableDescription: document.querySelector('#table-description'),
   fieldSelect: document.querySelector('#field-select'),
   temperatureSelect: document.querySelector('#temperature-select'),
   temperatureList: document.querySelector('#temperature-list'),
@@ -192,6 +194,7 @@ function clearError() {
 }
 
 function setBusy(isBusy, message = '') {
+  elements.tableSelect.disabled = isBusy;
   elements.previewButton.disabled = isBusy;
   elements.downloadButton.disabled = isBusy;
   elements.plotButton.disabled = isBusy;
@@ -202,6 +205,11 @@ function setBusy(isBusy, message = '') {
   } else if (state.manifest) {
     elements.loadingMessage.hidden = true;
   }
+}
+
+function datasetUrl(relativePath) {
+  if (!state.dataRoot) throw new Error('No opacity table is selected.');
+  return `${state.dataRoot}/${relativePath}`;
 }
 
 async function fetchJson(url) {
@@ -222,7 +230,7 @@ async function loadChunk(chunkInfo) {
   if (state.chunkCache.has(chunkInfo.file)) return state.chunkCache.get(chunkInfo.file);
 
   const promise = (async () => {
-    const url = `${DATA_ROOT}/${chunkInfo.file}`;
+    const url = datasetUrl(chunkInfo.file);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
     const buffer = await decompressGzip(response);
@@ -251,7 +259,7 @@ async function loadPlotField(field) {
   if (state.plotCache.has(info.file)) return state.plotCache.get(info.file);
 
   const promise = (async () => {
-    const url = `${DATA_ROOT}/plot/${info.file}`;
+    const url = datasetUrl(`plot/${info.file}`);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
     const buffer = await decompressGzip(response);
@@ -760,7 +768,7 @@ async function downloadSelection() {
     const anchor = document.createElement('a');
     anchor.href = url;
     anchor.download = (
-      `GLOW_${query.field}_T${query.temperatures.length}_rho${query.densities.length}_` +
+      `GLOW_${state.activeTable.id}_${query.field}_T${query.temperatures.length}_rho${query.densities.length}_` +
       `${query.energy.outputBinCount}groups_T${query.temperatureOutputUnit}.txt`
     );
     document.body.append(anchor);
@@ -1432,7 +1440,7 @@ function downloadPlotCsv() {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `GLOW_plot_${definition.field}_${definition.sweep}_${definition.energyMode}.csv`;
+  anchor.download = `GLOW_${state.activeTable.id}_plot_${definition.field}_${definition.sweep}_${definition.energyMode}.csv`;
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
@@ -1440,6 +1448,16 @@ function downloadPlotCsv() {
 }
 
 function populateControls() {
+  [
+    elements.fieldSelect,
+    elements.plotFieldSelect,
+    elements.temperatureSelect,
+    elements.densityMinSelect,
+    elements.densityMaxSelect,
+    elements.plotDensitySelect,
+    elements.plotTemperatureSelect,
+  ].forEach((select) => select.replaceChildren());
+
   for (const [field, metadata] of Object.entries(state.manifest.field_metadata)) {
     const option = document.createElement('option');
     option.value = field;
@@ -1484,8 +1502,11 @@ function populateControls() {
   elements.plotDensitySelect.value = String(Math.floor(state.axes.rho_gcc.length / 2));
   elements.plotTemperatureSelect.value = String(Math.floor(state.axes.temp_eV.length / 2));
   elements.plotDensityCustom.value = String(state.axes.rho_gcc[Math.floor(state.axes.rho_gcc.length / 2)]);
-  elements.plotTemperatureCustom.value = String(state.axes.temp_eV[Math.floor(state.axes.temp_eV.length / 2)]);
   state.plotTemperatureUnit = glowPlotTemperatureUnit();
+  elements.plotTemperatureCustom.value = String(glowTemperatureFromEv(
+    state.axes.temp_eV[Math.floor(state.axes.temp_eV.length / 2)],
+    state.plotTemperatureUnit,
+  ));
   glowRefreshPlotTemperatureControls();
   elements.plotTemperatureUnitSelect.dataset.previousUnit = elements.plotTemperatureUnitSelect.value;
   refreshPlotTemperatureLabels();
@@ -1493,6 +1514,10 @@ function populateControls() {
 }
 
 function attachEvents() {
+  elements.tableSelect.addEventListener('change', () => {
+    selectTable(elements.tableSelect.value);
+  });
+
   document.querySelectorAll('input[name="temperature-mode"], input[name="density-mode"], input[name="energy-mode"]')
     .forEach((radio) => radio.addEventListener('change', updateModePanels));
 
@@ -1562,41 +1587,99 @@ function attachEvents() {
   elements.plotDownloadButton.addEventListener('click', downloadPlotCsv);
 }
 
-async function initialize() {
+function validateDataset(manifest, axes, plotManifest) {
+  if (manifest.dimensions.groups !== 1024) {
+    throw new Error(`Expected 1024 native groups, found ${manifest.dimensions.groups}.`);
+  }
+  if (manifest.storage.axis_order.join(',') !== 'group,rho,temp') {
+    throw new Error('Unexpected browser-data axis order.');
+  }
+  if (axes.temp_eV.length !== manifest.dimensions.temperatures ||
+      axes.rho_gcc.length !== manifest.dimensions.densities ||
+      axes.hnu_ev_edges.length !== manifest.dimensions.groups + 1) {
+    throw new Error('Axis lengths disagree with the manifest.');
+  }
+  if (plotManifest.dimensions.temperatures !== manifest.dimensions.temperatures ||
+      plotManifest.dimensions.densities !== manifest.dimensions.densities ||
+      plotManifest.axis_order.join(',') !== 'rho,temp') {
+    throw new Error('Integrated plot data disagree with the main dataset axes.');
+  }
+}
+
+function populateTableSelector() {
+  const { tables } = state.tableCatalog;
+  if (!Array.isArray(tables) || tables.length === 0) {
+    throw new Error('The opacity-table catalog does not contain any tables.');
+  }
+  elements.tableSelect.replaceChildren();
+  for (const table of tables) {
+    if (!table.id || !table.data_root || !table.label) {
+      throw new Error('The opacity-table catalog contains an incomplete entry.');
+    }
+    const option = document.createElement('option');
+    option.value = table.id;
+    option.textContent = table.label;
+    elements.tableSelect.append(option);
+  }
+}
+
+async function selectTable(tableId) {
+  const table = state.tableCatalog.tables.find((candidate) => candidate.id === tableId);
+  if (!table) {
+    throw new Error(`Unknown opacity table: ${tableId}.`);
+  }
+
+  setBusy(true, `Loading ${table.label}…`);
+  elements.loadingMessage.classList.remove('error');
+  let loadingError = null;
   try {
+    const dataRoot = table.data_root.replace(/\/$/, '');
     const [manifest, axes, plotManifest] = await Promise.all([
-      fetchJson(MANIFEST_URL),
-      fetchJson(AXES_URL),
-      fetchJson(PLOT_MANIFEST_URL),
+      fetchJson(`${dataRoot}/manifest.json`),
+      fetchJson(`${dataRoot}/axes.json`),
+      fetchJson(`${dataRoot}/plot/manifest.json`),
     ]);
+    validateDataset(manifest, axes, plotManifest);
+
+    state.activeTable = table;
+    state.dataRoot = dataRoot;
     state.manifest = manifest;
     state.axes = axes;
     state.plotManifest = plotManifest;
-
-    if (manifest.dimensions.groups !== 1024) {
-      throw new Error(`Expected 1024 native groups, found ${manifest.dimensions.groups}.`);
-    }
-    if (manifest.storage.axis_order.join(',') !== 'group,rho,temp') {
-      throw new Error('Unexpected browser-data axis order.');
-    }
-    if (axes.temp_eV.length !== manifest.dimensions.temperatures ||
-        axes.rho_gcc.length !== manifest.dimensions.densities ||
-        axes.hnu_ev_edges.length !== manifest.dimensions.groups + 1) {
-      throw new Error('Axis lengths disagree with the manifest.');
-    }
-    if (plotManifest.dimensions.temperatures !== manifest.dimensions.temperatures ||
-        plotManifest.dimensions.densities !== manifest.dimensions.densities ||
-        plotManifest.axis_order.join(',') !== 'rho,temp') {
-      throw new Error('Integrated plot data disagree with the main dataset axes.');
-    }
+    state.chunkCache.clear();
+    state.collapsePlanCache.clear();
+    state.plotCache.clear();
+    state.lastPlot = null;
 
     populateControls();
+    elements.tableSelect.value = table.id;
+    elements.tableDescription.textContent = table.description || '';
+    elements.previewSection.hidden = true;
+    elements.plotSection.hidden = true;
+    updateModePanels();
+    updatePlotPanels();
+  } catch (error) {
+    loadingError = `Table loading failed: ${error.message}`;
+    if (state.activeTable) elements.tableSelect.value = state.activeTable.id;
+  } finally {
+    setBusy(false);
+    if (loadingError) {
+      elements.loadingMessage.textContent = loadingError;
+      elements.loadingMessage.classList.add('error');
+      elements.loadingMessage.hidden = false;
+    }
+  }
+}
+
+async function initialize() {
+  try {
+    state.tableCatalog = await fetchJson(TABLE_CATALOG_URL);
+    populateTableSelector();
     attachEvents();
     elements.form.hidden = false;
     elements.plotForm.hidden = false;
-    elements.loadingMessage.hidden = true;
-    updateModePanels();
-    updatePlotPanels();
+    const defaultTable = state.tableCatalog.default_table || state.tableCatalog.tables[0].id;
+    await selectTable(defaultTable);
   } catch (error) {
     elements.loadingMessage.textContent = `Dataset initialization failed: ${error.message}`;
     elements.loadingMessage.classList.add('error');
