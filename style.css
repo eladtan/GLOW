@@ -1136,32 +1136,6 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
   line-height: 1.35;
 }
 
-.discovery-open-card {
-  min-height: 100%;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.discovery-open-icon {
-  width: 54px;
-  height: 54px;
-  margin-top: 1.2rem;
-  display: grid;
-  place-items: center;
-  color: #b66cff;
-}
-
-.discovery-open-icon svg {
-  width: 42px;
-  height: 42px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.55;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 html[data-theme="light"] .hero-cinematic {
   color-scheme: dark;
   color: #f7f9fd;
@@ -1250,14 +1224,6 @@ html[data-theme="light"] .hero-cinematic .hero-lede {
     aspect-ratio: auto;
   }
 
-  .discovery-open-card {
-    display: flex;
-    min-height: 180px;
-  }
-
-  .discovery-open-icon {
-    margin-top: 0;
-  }
 }
 /* End GLOW full-width TDE hero and discovery cards v2 */
 
@@ -1381,17 +1347,6 @@ html[data-theme="light"] .hero-cinematic .hero-lede {
 .discovery-copy small {
   margin-top: .42rem;
   font-size: .54rem;
-}
-
-.discovery-open-icon {
-  width: 46px;
-  height: 46px;
-  margin-top: .85rem;
-}
-
-.discovery-open-icon svg {
-  width: 35px;
-  height: 35px;
 }
 
 @media (max-width: 1180px) {
@@ -1532,18 +1487,12 @@ html[data-theme="light"] .hero-cinematic .hero-lede {
   overflow: hidden;
 }
 
-.discovery-open-card {
-  height: 270px;
-  min-height: 270px;
-}
-
 @media (max-width: 1180px) {
   .discovery-grid {
     grid-auto-rows: 292px;
   }
 
-  .discovery-card,
-  .discovery-open-card {
+  .discovery-card {
     height: 292px;
     min-height: 292px;
   }
@@ -1608,12 +1557,6 @@ html[data-theme="light"] .hero-cinematic .hero-lede {
   .discovery-copy {
     padding: .82rem;
     overflow: visible;
-  }
-
-  .discovery-open-card {
-    height: 150px;
-    min-height: 150px;
-    display: flex !important;
   }
 }
 
