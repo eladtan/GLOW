@@ -1,2 +1,3 @@
-# GLOW
-GLOW: Group-resolved Low-density Opacity Warehouse. A Public Library of Multigroup Opacities Extending to Low-Density Astrophysical Plasmas
+# GLOW: The Group-resolved LTE Opacity Warehouse for Astrophysical Plasmas
+
+GLOW is the Group-resolved LTE Opacity Warehouse for Astrophysical Plasmas.
