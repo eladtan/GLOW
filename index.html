@@ -660,6 +660,56 @@
         </a>
       </article>
 
+      <article class="composition-panel reveal" aria-labelledby="solar-composition-title">
+        <div class="composition-copy">
+          <p class="panel-kicker">Mixture definition</p>
+          <h3 id="solar-composition-title">Solar composition</h3>
+          <p>
+            The <strong>1 Z<sub>⊙</sub></strong> table uses a normalized
+            15-element subset of the photospheric abundances compiled by
+            Asplund, Amarsi &amp; Grevesse (2021; AAG21). These are the number
+            fractions supplied to STAR.
+          </p>
+          <p class="composition-scaling">
+            For the 0.1 and 10 Z<sub>⊙</sub> mixtures, hydrogen and helium remain
+            unscaled, every heavier element is multiplied by 0.1 or 10, and the
+            complete 15-element vector is renormalized.
+          </p>
+          <a class="paper-reference composition-reference" href="https://doi.org/10.1051/0004-6361/202140445" target="_blank" rel="noreferrer">
+            <span>Composition reference</span>
+            <strong>Asplund, Amarsi &amp; Grevesse (2021)</strong>
+            <small>“The chemical make-up of the Sun: A 2020 vision” · A&amp;A 653, A141</small>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"></path></svg>
+          </a>
+        </div>
+
+        <div class="composition-table-wrap">
+          <table class="composition-table">
+            <caption>Normalized number fractions for the 1 Z<sub>⊙</sub> mixture</caption>
+            <thead>
+              <tr><th scope="col">Element</th><th scope="col">Number fraction</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">H</th><td>9.23262183e-01</td></tr>
+              <tr><th scope="row">He</th><td>7.57399558e-02</td></tr>
+              <tr><th scope="row">C</th><td>2.66271722e-04</td></tr>
+              <tr><th scope="row">N</th><td>6.24201844e-05</td></tr>
+              <tr><th scope="row">O</th><td>4.52194262e-04</td></tr>
+              <tr><th scope="row">Ne</th><td>1.06004682e-04</td></tr>
+              <tr><th scope="row">Na</th><td>1.53223383e-06</td></tr>
+              <tr><th scope="row">Mg</th><td>3.27585784e-05</td></tr>
+              <tr><th scope="row">Al</th><td>2.48499230e-06</td></tr>
+              <tr><th scope="row">Si</th><td>2.98761786e-05</td></tr>
+              <tr><th scope="row">S</th><td>1.21709659e-05</td></tr>
+              <tr><th scope="row">Ar</th><td>2.21475172e-06</td></tr>
+              <tr><th scope="row">Ca</th><td>1.84215024e-06</td></tr>
+              <tr><th scope="row">Fe</th><td>2.66271722e-05</td></tr>
+              <tr><th scope="row">Ni</th><td>1.46327195e-06</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
       <div class="method-grid">
         <article class="method-card reveal">
           <span class="method-icon violet">P</span>
@@ -697,7 +747,6 @@
     <section id="data" class="section-shell data-section reveal">
       <div class="data-cta">
         <div>
-          <p class="eyebrow"><span></span> Open and reproducible</p>
           <h2>A public library for low-density astrophysical plasmas.</h2>
           <p>
             GLOW provides group-resolved opacity inputs for supernovae, tidal

@@ -748,6 +748,63 @@ html[data-theme="light"] code { color: #6135b7; }
 .paper-reference svg { position: absolute; right: 1rem; top: 1rem; width: 18px; height: 18px; fill: none; stroke: var(--text-soft); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 html[data-theme="light"] .paper-reference { background: rgba(255,255,255,.52); }
 
+.composition-panel {
+  margin: 1rem 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(390px, 1.1fr);
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: start;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-small);
+}
+.composition-copy h3 { margin: .15rem 0 .55rem; font-size: clamp(1.1rem, 1.8vw, 1.35rem); }
+.composition-copy > p { margin: 0; color: var(--muted); }
+.composition-copy sub,
+.composition-table caption sub { line-height: 0; }
+.composition-scaling { margin-top: .8rem !important; }
+.composition-reference { margin-top: 1.2rem; }
+.composition-table-wrap {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(7, 13, 24, .28);
+}
+.composition-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+.composition-table caption {
+  padding: .85rem 1rem;
+  color: var(--text-soft);
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.composition-table th,
+.composition-table td {
+  padding: .48rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.composition-table thead th {
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.composition-table thead th:last-child,
+.composition-table td { text-align: right; }
+.composition-table tbody th { color: var(--text); text-align: left; }
+.composition-table td { color: var(--text-soft); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.composition-table tbody tr:last-child th,
+.composition-table tbody tr:last-child td { border-bottom: 0; }
+html[data-theme="light"] .composition-table-wrap { background: rgba(255,255,255,.4); }
+
 .method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .85rem; }
 .method-card { min-height: 220px; padding: 1.3rem; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-small); }
 .method-icon { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 12px; font-weight: 800; }
@@ -805,6 +862,7 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
 }
 
 @media (max-width: 860px) {
+  .composition-panel { grid-template-columns: minmax(0, 1fr); }
   .nav-shell { min-height: 68px; }
   .nav-toggle { display: grid; }
   .nav-links {
@@ -840,6 +898,9 @@ footer { border-top: 1px solid var(--border); background: var(--bg-elevated); }
 
 @media (max-width: 640px) {
   .calculation-provenance { grid-template-columns: 1fr; }
+  .composition-panel { padding: 1rem; }
+  .composition-table th,
+  .composition-table td { padding: .45rem .7rem; }
   .provenance-mark { width: 56px; height: 56px; border-radius: 16px; }
   .transient-scene { inset: 3% -5% 0; width: 110%; }
   .spectrum-card-a { left: 4%; bottom: 4%; }
