@@ -5,7 +5,7 @@ import {
   loadPlotPoints,
   makeSpectrumPlotPoints,
   preparePlotDomain,
-  processSpectrumChunksSequentially,
+  processSpectrumChunkBatches,
 } from '../plot_math.mjs';
 
 const points = [
@@ -54,7 +54,7 @@ assert.deepEqual(
 let activeLoads = 0;
 let maximumActiveLoads = 0;
 const visitedBatches = [];
-await processSpectrumChunksSequentially(
+await processSpectrumChunkBatches(
   chunks,
   async (chunk) => {
     activeLoads += 1;
@@ -70,12 +70,97 @@ await processSpectrumChunksSequentially(
       batchCount,
     });
   },
+  4,
 );
 assert.equal(maximumActiveLoads, 2);
-assert.deepEqual(visitedBatches, [
+assert.deepEqual(visitedBatches.sort((left, right) => left.batchIndex - right.batchIndex), [
   { files: ['part0-g0', 'part1-g0'], batchIndex: 0, batchCount: 2 },
   { files: ['part0-g1'], batchIndex: 1, batchCount: 2 },
 ]);
+
+const parallelChunks = Array.from({ length: 4 }, (_, index) => ({
+  file: `g${index}`,
+  group_start: index * 64,
+  group_stop: (index + 1) * 64,
+}));
+let parallelActiveLoads = 0;
+let parallelMaximumActiveLoads = 0;
+let releaseLoads;
+const loadGate = new Promise((resolve) => { releaseLoads = resolve; });
+let reportAllLoadsStarted;
+const allLoadsStarted = new Promise((resolve) => { reportAllLoadsStarted = resolve; });
+const parallelProcessing = processSpectrumChunkBatches(
+  parallelChunks,
+  async (chunk) => {
+    parallelActiveLoads += 1;
+    parallelMaximumActiveLoads = Math.max(
+      parallelMaximumActiveLoads,
+      parallelActiveLoads,
+    );
+    if (parallelActiveLoads === 4) reportAllLoadsStarted();
+    await loadGate;
+    parallelActiveLoads -= 1;
+    return chunk.file;
+  },
+  () => {},
+  4,
+);
+await allLoadsStarted;
+assert.equal(parallelMaximumActiveLoads, 4);
+releaseLoads();
+await parallelProcessing;
+
+await assert.rejects(
+  () => processSpectrumChunkBatches(parallelChunks, async () => null, () => {}, 0),
+  /positive integer/i,
+);
+await assert.rejects(
+  () => processSpectrumChunkBatches([], async () => null, () => {}, 0),
+  /positive integer/i,
+);
+
+const oversizedBatch = Array.from({ length: 5 }, (_, index) => ({
+  file: `part${index}-g0`,
+  group_start: 0,
+  group_stop: 64,
+}));
+await assert.rejects(
+  () => processSpectrumChunkBatches(oversizedBatch, async () => null, () => {}, 4),
+  /requires 5 chunks/i,
+);
+
+let releaseSiblingLoads;
+const siblingLoadGate = new Promise((resolve) => { releaseSiblingLoads = resolve; });
+const startedAfterFailure = [];
+const visitedAfterFailure = [];
+const failingProcessing = processSpectrumChunkBatches(
+  Array.from({ length: 8 }, (_, index) => ({
+    file: `failure-g${index}`,
+    group_start: index * 64,
+    group_stop: (index + 1) * 64,
+  })),
+  async (chunk) => {
+    startedAfterFailure.push(chunk.file);
+    if (chunk.file === 'failure-g0') throw new Error('expected chunk failure');
+    await siblingLoadGate;
+    return chunk.file;
+  },
+  (_loaded, batchIndex) => { visitedAfterFailure.push(batchIndex); },
+  4,
+);
+await new Promise((resolve) => setImmediate(resolve));
+releaseSiblingLoads();
+await assert.rejects(() => failingProcessing, /expected chunk failure/i);
+assert.deepEqual(startedAfterFailure.sort(), [
+  'failure-g0',
+  'failure-g1',
+  'failure-g2',
+  'failure-g3',
+]);
+assert.deepEqual(visitedAfterFailure, []);
+await new Promise((resolve) => setImmediate(resolve));
+assert.equal(startedAfterFailure.length, 4);
+assert.deepEqual(visitedAfterFailure, []);
 
 const spectrumPoints = makeSpectrumPlotPoints(
   { values: [4, 9], statuses: ['exact', 'interpolated'] },

@@ -14,7 +14,7 @@ import {
   loadPlotPoints,
   makeSpectrumPlotPoints,
   preparePlotDomain,
-  processSpectrumChunksSequentially,
+  processSpectrumChunkBatches,
 } from './plot_math.mjs';
 import {
   temperatureFromEV,
@@ -35,6 +35,7 @@ const MAX_TEMPERATURE_VALUES = 256;
 const MAX_DENSITY_VALUES = 256;
 const MAX_SPECTRA = 4096;
 const TRANSFER_WARNING_BYTES = 100 * 1024 * 1024;
+const MAX_CONCURRENT_SPECTRUM_CHUNKS = 4;
 
 const state = {
   tableCatalog: null,
@@ -1135,11 +1136,12 @@ async function spectrumPlotPoints(definition) {
     statuses: new Array(stop - start),
   };
   let loadedCompressedBytes = 0;
+  let completedBatches = 0;
 
-  await processSpectrumChunksSequentially(
+  await processSpectrumChunkBatches(
     query.chunks,
     fetchChunk,
-    (chunkValues, batchIndex, batchCount) => {
+    (chunkValues, _batchIndex, batchCount) => {
       const loadedChunks = new Map(chunkValues.map(({ chunk, values }) => (
         [chunk.file, values]
       )));
@@ -1169,11 +1171,13 @@ async function spectrumPlotPoints(definition) {
         (sum, { chunk }) => sum + chunk.compressed_bytes,
         0,
       );
+      completedBatches += 1;
       elements.loadingMessage.textContent = [
-        `Loading line-plot data: energy block ${batchIndex + 1}/${batchCount}`,
+        `Loading line-plot data: ${completedBatches}/${batchCount} energy blocks`,
         `(${formatBytes(loadedCompressedBytes)}/${formatBytes(definition.compressedBytes)})...`,
       ].join(' ');
     },
+    MAX_CONCURRENT_SPECTRUM_CHUNKS,
   );
 
   return makeSpectrumPlotPoints(

@@ -69,15 +69,50 @@ export function groupSpectrumChunks(chunks) {
   return batches;
 }
 
-export async function processSpectrumChunksSequentially(chunks, loadChunk, visitBatch) {
+export async function processSpectrumChunkBatches(
+  chunks, loadChunk, visitBatch, maxConcurrentChunks,
+) {
   const batches = groupSpectrumChunks(chunks);
-  for (let batchIndex = 0; batchIndex < batches.length; batchIndex += 1) {
-    const chunkValues = await Promise.all(batches[batchIndex].map(async (chunk) => ({
-      chunk,
-      values: await loadChunk(chunk),
-    })));
-    await visitBatch(chunkValues, batchIndex, batches.length);
+  if (!Number.isInteger(maxConcurrentChunks) || maxConcurrentChunks < 1) {
+    throw new Error('Spectrum chunk concurrency must be a positive integer.');
   }
+  if (batches.length === 0) return;
+
+  const largestBatch = Math.max(...batches.map((batch) => batch.length));
+  if (largestBatch > maxConcurrentChunks) {
+    throw new Error(
+      `A spectrum energy block requires ${largestBatch} chunks, exceeding the ${maxConcurrentChunks}-chunk limit.`,
+    );
+  }
+  const workerCount = Math.min(
+    batches.length,
+    Math.max(1, Math.floor(maxConcurrentChunks / largestBatch)),
+  );
+  let nextBatchIndex = 0;
+  let failure = null;
+
+  async function worker() {
+    while (!failure && nextBatchIndex < batches.length) {
+      const batchIndex = nextBatchIndex;
+      nextBatchIndex += 1;
+      try {
+        const chunkValues = [];
+        for (const chunk of batches[batchIndex]) {
+          const values = await loadChunk(chunk);
+          if (failure) return;
+          chunkValues.push({ chunk, values });
+        }
+        if (failure) return;
+        await visitBatch(chunkValues, batchIndex, batches.length);
+      } catch (error) {
+        if (!failure) failure = error;
+        return;
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  if (failure) throw failure;
 }
 
 export function makeSpectrumPlotPoints(spectrum, energyEdges, spectralUnit, hertzPerEV) {
