@@ -9,11 +9,16 @@ import {
   parseStrictlyIncreasingEdges,
   requiredFieldsForCollapse,
 } from './opacity_math.mjs';
-import { isDrawablePoint, preparePlotDomain } from './plot_math.mjs';
+import {
+  isDrawablePoint,
+  loadPlotPoints,
+  makeSpectrumPlotPoints,
+  preparePlotDomain,
+  processSpectrumChunksSequentially,
+} from './plot_math.mjs';
 import {
   temperatureFromEV,
   temperatureToEV,
-  spectralCoordinateFromEV,
   temperatureUnitLabel,
   spectralUnitLabel,
 } from './unit_math.mjs';
@@ -245,16 +250,18 @@ function decodeOpacityArray(buffer, metadata) {
   return new ArrayType(buffer);
 }
 
+async function fetchChunk(chunkInfo) {
+  const url = datasetUrl(chunkInfo.file);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
+  const buffer = await decompressGzip(response);
+  return decodeOpacityArray(buffer, chunkInfo);
+}
+
 async function loadChunk(chunkInfo) {
   if (state.chunkCache.has(chunkInfo.file)) return state.chunkCache.get(chunkInfo.file);
 
-  const promise = (async () => {
-    const url = datasetUrl(chunkInfo.file);
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Could not load ${url}: HTTP ${response.status}`);
-    const buffer = await decompressGzip(response);
-    return decodeOpacityArray(buffer, chunkInfo);
-  })();
+  const promise = fetchChunk(chunkInfo);
 
   state.chunkCache.set(chunkInfo.file, promise);
   try {
@@ -922,33 +929,6 @@ function makeSpecificGroupPlotQuery(field, sweep, fixedValue, group) {
   };
 }
 
-function makeSpectralPlotQuery(field, temperature, density) {
-  const temperatures = [temperature];
-  const densities = [density];
-  const temperatureBrackets = [findLogBracket(state.axes.temp_eV, temperature, 'Temperature')];
-  const densityBrackets = [findLogBracket(state.axes.rho_gcc, density, 'Density')];
-  const energy = {
-    mode: 'native',
-    outputEdges: [...state.axes.hnu_ev_edges],
-    nativeGroupStart: 0,
-    nativeGroupStopExclusive: state.manifest.dimensions.groups,
-    outputBinCount: state.manifest.dimensions.groups,
-  };
-  const chunks = uniqueRequiredChunks(field, temperatureBrackets, energy);
-  return {
-    field,
-    temperatures,
-    densities,
-    temperatureBrackets,
-    densityBrackets,
-    energy,
-    spectra: 1,
-    rowCount: energy.outputBinCount,
-    chunks,
-    compressedBytes: chunks.reduce((sum, chunk) => sum + chunk.compressed_bytes, 0),
-  };
-}
-
 function makeSpectrumPlotQuery(field, temperature, density) {
   const temperatures = [temperature];
   const densities = [density];
@@ -1146,52 +1126,62 @@ async function specificGroupPlotPoints(definition) {
   return points;
 }
 
-async function spectralPlotPoints(definition) {
-  const loadedChunks = await loadQueryChunks(definition.query);
-  const spectrum = buildInterpolatedNativeSpectrum(
-    definition.query, loadedChunks, 0, 0, definition.field,
-  );
-  const points = [];
-  for (let group = 0; group < definition.query.energy.outputBinCount; group += 1) {
-    const low = state.axes.hnu_ev_edges[group];
-    const high = state.axes.hnu_ev_edges[group + 1];
-    const centerEV = Math.sqrt(low * high);
-    points.push({
-      x: spectralCoordinateFromEV(centerEV, definition.spectralUnit),
-      y: spectrum.values[group],
-      status: spectrum.statuses[group],
-      group,
-      energyLowEV: low,
-      energyHighEV: high,
-    });
-  }
-  return points;
-}
-
 async function spectrumPlotPoints(definition) {
-  const loadedChunks = await loadQueryChunks(definition.query);
-  const spectrum = buildInterpolatedNativeSpectrum(
-    definition.query,
-    loadedChunks,
-    0,
-    0,
-    definition.field,
+  const query = definition.query;
+  const start = query.energy.nativeGroupStart;
+  const stop = query.energy.nativeGroupStopExclusive;
+  const spectrum = {
+    values: new Float64Array(stop - start),
+    statuses: new Array(stop - start),
+  };
+  let loadedCompressedBytes = 0;
+
+  await processSpectrumChunksSequentially(
+    query.chunks,
+    fetchChunk,
+    (chunkValues, batchIndex, batchCount) => {
+      const loadedChunks = new Map(chunkValues.map(({ chunk, values }) => (
+        [chunk.file, values]
+      )));
+      const groupStart = Math.max(start, chunkValues[0].chunk.group_start);
+      const groupStop = Math.min(stop, chunkValues[0].chunk.group_stop);
+      const temperatureBracket = query.temperatureBrackets[0];
+      const densityBracket = query.densityBrackets[0];
+
+      for (let group = groupStart; group < groupStop; group += 1) {
+        const result = interpolateOpacityLogLog(
+          (temperatureIndex, densityIndex) => readNativeValue(
+            query,
+            loadedChunks,
+            definition.field,
+            group,
+            temperatureIndex,
+            densityIndex,
+          ),
+          temperatureBracket,
+          densityBracket,
+        );
+        spectrum.values[group - start] = result.value;
+        spectrum.statuses[group - start] = result.status;
+      }
+
+      loadedCompressedBytes += chunkValues.reduce(
+        (sum, { chunk }) => sum + chunk.compressed_bytes,
+        0,
+      );
+      elements.loadingMessage.textContent = [
+        `Loading line-plot data: energy block ${batchIndex + 1}/${batchCount}`,
+        `(${formatBytes(loadedCompressedBytes)}/${formatBytes(definition.compressedBytes)})...`,
+      ].join(' ');
+    },
   );
-  const points = [];
-  for (let group = 0; group < spectrum.values.length; group += 1) {
-    const energyLow = state.axes.hnu_ev_edges[group];
-    const energyHigh = state.axes.hnu_ev_edges[group + 1];
-    const energyCenter = Math.sqrt(energyLow * energyHigh);
-    points.push({
-      x: definition.spectralUnit === 'Hz' ? energyCenter * GLOW_HZ_PER_EV : energyCenter,
-      y: spectrum.values[group],
-      status: spectrum.statuses[group],
-      group,
-      energyLow,
-      energyHigh,
-    });
-  }
-  return points;
+
+  return makeSpectrumPlotPoints(
+    spectrum,
+    state.axes.hnu_ev_edges,
+    definition.spectralUnit,
+    GLOW_HZ_PER_EV,
+  );
 }
 
 function svgElement(name, attributes = {}, text = '') {
@@ -1391,15 +1381,14 @@ async function drawPlot() {
   try {
     const definition = getPlotDefinition();
     setBusy(true, `Loading line-plot data (${formatBytes(definition.compressedBytes)})...`);
-    let points;
-    if (definition.sweep === 'frequency') {
-      points = await spectrumPlotPoints(definition);
-    } else if (definition.energyMode === 'integrated') {
-      const values = await loadPlotField(definition.field);
-      points = integratedPlotPoints(definition, values);
-    } else {
-      points = await specificGroupPlotPoints(definition);
-    }
+    const points = await loadPlotPoints(definition, {
+      spectrum: spectrumPlotPoints,
+      integrated: async (plotDefinition) => integratedPlotPoints(
+        plotDefinition,
+        await loadPlotField(plotDefinition.field),
+      ),
+      specificGroup: specificGroupPlotPoints,
+    });
     renderLinePlot(definition, points);
     state.lastPlot = { definition, points };
     elements.plotDownloadButton.disabled = false;

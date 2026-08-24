@@ -53,3 +53,53 @@ export function preparePlotDomain(points, logX, logY) {
 
   return { drawable, xMin, xMax, yMin, yMax };
 }
+
+export function groupSpectrumChunks(chunks) {
+  const batches = [];
+  const batchByGroupRange = new Map();
+  for (const chunk of chunks) {
+    const key = `${chunk.group_start}:${chunk.group_stop}`;
+    if (!batchByGroupRange.has(key)) {
+      const batch = [];
+      batchByGroupRange.set(key, batch);
+      batches.push(batch);
+    }
+    batchByGroupRange.get(key).push(chunk);
+  }
+  return batches;
+}
+
+export async function processSpectrumChunksSequentially(chunks, loadChunk, visitBatch) {
+  const batches = groupSpectrumChunks(chunks);
+  for (let batchIndex = 0; batchIndex < batches.length; batchIndex += 1) {
+    const chunkValues = await Promise.all(batches[batchIndex].map(async (chunk) => ({
+      chunk,
+      values: await loadChunk(chunk),
+    })));
+    await visitBatch(chunkValues, batchIndex, batches.length);
+  }
+}
+
+export function makeSpectrumPlotPoints(spectrum, energyEdges, spectralUnit, hertzPerEV) {
+  const points = [];
+  for (let group = 0; group < spectrum.values.length; group += 1) {
+    const energyLow = energyEdges[group];
+    const energyHigh = energyEdges[group + 1];
+    const energyCenter = Math.sqrt(energyLow * energyHigh);
+    points.push({
+      x: spectralUnit === 'Hz' ? energyCenter * hertzPerEV : energyCenter,
+      y: spectrum.values[group],
+      status: spectrum.statuses[group],
+      group,
+      energyLow,
+      energyHigh,
+    });
+  }
+  return points;
+}
+
+export async function loadPlotPoints(definition, loaders) {
+  if (definition.sweep === 'frequency') return loaders.spectrum(definition);
+  if (definition.energyMode === 'integrated') return loaders.integrated(definition);
+  return loaders.specificGroup(definition);
+}
